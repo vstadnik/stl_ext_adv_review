@@ -1,0 +1,239 @@
+
+/* 
+	style classes used by HTML documents
+*/ 
+
+
+/*  function description */  
+p.p_f1
+{
+	text-align    : left   ;
+
+	margin-left   :  32px  ;
+	margin-bottom : -12px  ;
+
+	text-indent   :   0px  ;	
+}
+
+
+/*  highlight first word */ 
+span.sp_f1
+{
+	font-weight : bold   ;
+	font-style  : italic ;
+}
+
+pre.pre_f1_border
+{
+	margin-left     : 32px    ;	
+	margin-right	: 32px	  ;
+	margin-top      : 40px    ; 
+	margin-bottom   : -8px    ;		
+
+	text-align      : left    ;
+	color           : Black   ;
+	
+ 	background-color: #e8e8ff ;		 
+
+	border-style    : solid   ;
+	border-color    : #808080 ;		
+	border-width	: 1px	  ;
+}
+
+
+
+/*	function signature */ 
+pre.pre_f1
+{
+	margin-left     : 32px    ;	
+	margin-right	: 32px	  ;
+	margin-top      : 40px    ; 
+	margin-bottom   : -8px    ;
+	padding-left	: -60px	  ;		
+
+	text-align      : left    ;
+	color           : Black   ;
+	
+ 	background-color: #e8e8ff ;		 
+}
+
+pre.pre_f1_TODO
+{
+	margin-top      : 40px    ; 
+	margin-bottom   : -8px    ;		
+
+	text-align      : left    ;
+	color           : Black   ;
+	
+ 	background-color: #ffdddd ;
+}
+
+
+h1.h1_f1 
+{
+	font-weight	    : bold    ;
+	padding-top     : 6px     ;
+	padding-bottom  : 0px     ;
+	margin-right	: 32px	  ;	
+	margin-top      : 40px    ; 	
+	margin-bottom   : 0px     ;	
+ 	background-color: #e8e8ff ;		 
+}
+
+
+h2.h2_f1 
+{
+	font-weight	    : bold    ;
+	padding-top     : 6px     ;
+	padding-bottom  : 0px     ;
+	margin-right	: 32px	  ;	
+	margin-top      : 40px    ; 	
+	margin-bottom   : 0px     ;	
+ 	background-color: #e8e8ff ;		 
+}
+
+
+h3.h3_f1 
+{
+	font-weight	    : bold    ;
+	padding-top     : 6px     ;
+	padding-bottom  : 0px     ;
+	margin-right	: 32px	  ;	
+	margin-top      : 32px    ; 	
+	margin-bottom   : 0px     ;	
+ 	background-color: #e8e8ff ;		 
+}
+
+
+h3.h3_f1_TODO 
+{
+	padding-top     : 6px     ;
+	padding-bottom  : 0px     ;
+	margin-top      : 32px    ; 	
+	margin-bottom   : 0px     ;	
+ 	background-color: #ffdddd ;
+}
+
+
+h4.h4_f1 
+{
+	font-weight	    : bold    ;
+	padding-top     : 6px     ;
+	padding-bottom  : 0px     ;
+	margin-right	: 32px	  ;	
+	margin-top      : 32px    ; 	
+	margin-bottom   : 0px     ;	
+ 	background-color: #e8e8ff ;		 
+}
+
+
+div.div_f1
+{
+	font-size        : small ;
+} 
+
+
+div.div_f1_frame
+{
+	margin-left     : 32px    ;	
+	margin-right	: 32px	  ;
+
+	text-align      : left    ;
+	color           : Black   ;
+ 	background-color: #e8e8ff ;		 
+ 	
+	border-style    : solid   ;
+	border-color    : #808080 ;		
+	border-width	: 1px	  ;
+} 
+
+
+dd.dd_f1 
+{
+	margin-bottom   : 2px     ;		
+} 
+
+hr.hr_f1
+{
+	position         : relative ;
+	width            : 80%      ;
+	height           : 2px      ; 
+	background-color : Black    ;	
+	border-width     : 1px      ;
+} 
+
+/*
+	TABLE styles, properties and values 
+*/
+
+table.tbl_f1
+{
+	text-align      : left ;
+	border-collapse : collapse ; 
+	border          : 1px solid Black ; 		
+	margin-left     : 32px ;		
+	margin-right	: 32px ;		
+}
+
+caption.cap_f1
+{
+	border           : 1px solid Black ;	
+	padding-left     : 32px   ;
+	padding-right    : 32px   ;	
+	padding-top      :  8px   ;
+	padding-bottom   :  8px   ;
+}
+
+td.td_f1
+{
+	border           : 1px solid Black ;	
+	padding-left     : 32px   ;
+	padding-right    : 32px   ;	
+	padding-top      :  4px   ;
+	padding-bottom   :  4px   ;
+	text-align		 : left   ;
+	vertical-align   : top    ;
+}
+
+
+/* same as td_f1, but nowrap for white spaces */
+td.td_f2
+{
+	border           : 1px solid Black ;	
+	padding-left     : 32px   ;
+	padding-right    : 32px   ;	
+	padding-top      :  4px   ;
+	padding-bottom   :  4px   ;
+	text-align		 : left   ;
+	vertical-align   : top    ;
+	white-space      : nowrap ;
+}
+
+
+td.td_cpp
+{
+	border           : 1px solid Black ;	
+	padding-left     : 32px   ;
+	padding-right    : 32px   ;	
+	padding-top      :  4px   ;
+	padding-bottom   :  4px   ;
+	text-align		 : left   ;
+	vertical-align   : top    ;
+	font-family      : Courier New ;	
+	font-size        : 10pt   ;	
+}
+
+
+/* special link to changes text-decoration */ 
+a.link_under:link {color:#000000;text-decoration:none;}
+a.link_under:visited {color:#000000;text-decoration:none;}
+a.link_under:hover {text-decoration:underline;}
+
+
+
+/*
+*********************************
+*/ 
+
+
+

@@ -1,0 +1,1477 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <link rel="stylesheet" type="text/css" href="../../../boost.css">
+  <link rel="stylesheet" type="text/css" href="images/bpt_styles.css">  
+
+  <title>bp_tree_array_acc</title>
+</head>
+
+<body link="#0000FF" vlink="#800080">
+  <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+  "header">
+    <tr>
+      <td valign="top" width="300">
+        <h3><a href="../../../index.htm"><img height="86" width="277" alt=
+        "C++ Boost" src="images/boost.png" border="0"></a></h3>
+      </td>
+    </tr>
+  </table>
+
+
+  <hr>  
+  <div align="right">
+    <a href="bp_tree_array.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="bibliography.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+
+
+<h2 align="left">
+    Class template <code>bp_tree_array_acc</code>
+</h2>
+
+    <p>
+    <code>class std_ext_adv::bp_tree_array_acc</code> in the file "bp_tree_array_acc.hpp".
+    <p>
+
+    <p>
+    The class <code>bp_tree_array_acc</code> represents a general purpose container 
+    that supports interfaces of the C++03 sequences and associative containers. 
+    A <code>bp_tree_array_acc</code> implements a partition of an array into a list of 
+    sub-arrays, thus, the container elements are not stored in contiguous memory. 
+    A <code>bp_tree_array_acc</code> can be used to store the elements with 
+    multiple or unique keys in the order specified by a comparison object.
+    A <code>bp_tree_array_acc</code> supports: 
+    </p>
+    <ul>
+    <li>random access iterators. 
+    <li>logarithmic time search operations using keys of the container elements if the elements are ordered.  
+    <li>logarithmic time insert and erase operations for a single element anywhere within the container.  
+    <li>logarithmic time splice and split operations for any ranges of consecutive elements and any positions in the containers involved.  
+    <li>the efficient member function <code>accumulate()</code> that has logarithmic complexity in the worst case.      
+    </ul>
+
+
+<h3 class="h3_f1">
+    Synopsis
+</h3>
+
+
+<pre class="pre_f1_border">
+ 
+ template
+ &lt;
+     class _Ty_Key ,
+     class _Ty_Map ,
+     class _Ty_Val ,
+     class _KeyOfV ,
+     class _MapOfV ,
+     class _Pred   ,
+     class _Alloc
+ &gt;
+ class bp_tree_array_acc
+ {
+ public:
+ 
+     //  types   
+     typedef bp_tree_array_acc &lt; _Ty_Key , _Ty_Map , _Ty_Val , 
+                                 _KeyOfV , _MapOfV , _Pred   , _Alloc &gt;
+                                                 this_type       ;
+     typedef _Ty_Key                             key_type        ;
+     typedef _Ty_Map                             mapped_type     ;
+     typedef _Ty_Val                             value_type      ;
+     typedef typename _Alloc::size_type          size_type       ;
+     typedef typename _Alloc::difference_type    difference_type ;
+     typedef typename _Alloc::pointer            pointer         ;
+     typedef typename _Alloc::const_pointer      const_pointer   ;
+     typedef typename _Alloc::reference          reference       ;
+     typedef typename _Alloc::const_reference    const_reference ;
+     typedef implementation-defined              iterator        ;
+     typedef implementation-defined              const_iterator  ;
+ 
+ 
+     //  constructors, copy, assignment and destructor 
+     bp_tree_array_acc ( const _Pred &   pred ,
+                         bool            mul  ,
+                         bool            ord  ,
+                         const _Alloc &  alr  ) ;
+     bp_tree_array_acc ( const bp_tree_array_acc &  that ) ;
+     bp_tree_array_acc &
+     operator =        ( const bp_tree_array_acc &  that ) ;
+    ~bp_tree_array_acc ( ) ;
+    
+     _Alloc  get_allocator ( ) const;
+ 
+ 
+     //  iterators
+     iterator        begin ( ) ;
+     const_iterator  begin ( ) const ;
+     iterator        end ( ) ;
+     const_iterator  end ( ) const ;
+ 
+ 
+     //  capacity 
+     size_type  size     ( ) const ;
+     size_type  max_size ( ) const ;
+     bool       empty    ( ) const ;
+     size_type  capacity ( ) const ;    
+     void       reserve  ( size_type  sz ) ;
+ 
+ 
+     //  sequence element access 
+     reference        operator[] ( size_type  i ) ;     
+     const_reference  operator[] ( size_type  i ) const ;
+     reference        at ( size_type  i ) ;
+     const_reference  at ( size_type  i ) const ;
+ 
+     reference        front ( ) ;
+     const_reference  front ( ) const ;
+     reference        back  ( ) ;
+     const_reference  back  ( ) const ;
+ 
+ 
+     //  sequence modifiers 
+     iterator  _insert_seqce ( iterator            pos ,
+                               const value_type &  val ) ;
+     void      _insert_seqce_count
+                             ( iterator            pos ,
+                               size_type           cnt ,
+                               const value_type &  val ) ;
+     template &lt;class _InpIter&gt;
+     void  _insert_seqce_iter( iterator            pos   ,
+                               _InpIter            pos_a ,
+                               _InpIter            pos_b ) ;
+ 
+     void  push_front ( const value_type &  x ) ; 
+     void  push_back  ( const value_type &  x ) ;
+     void  pop_front  ( ) ;    
+     void  pop_back   ( ) ;    
+ 
+     void  resize ( size_type           sz_new ,
+                    const value_type &  val    ) ;
+     void  resize ( size_type           sz_new ) ;
+ 
+     void  reverse ( ) ;
+ 
+     iterator  splice ( iterator             pos   ,
+                        bp_tree_array_acc &  that  ) ;
+     iterator  splice ( iterator             pos   ,
+                        bp_tree_array_acc &  that  ,
+                        iterator             pos_a ) ;
+     iterator  splice ( iterator             pos   ,
+                        bp_tree_array_acc &  that  ,
+                        iterator             pos_a ,
+                        iterator             pos_b ) ;
+ 
+     void  remove ( const value_type &  val ) ;
+     template &lt;class _PredRem&gt;        
+     void  remove_if ( _PredRem  pred ) ; 
+ 
+     void  unique ( ) ; 
+     template &lt;class _PredRem&gt;
+     void  unique ( _PredRem  pred ) ;
+ 
+     template &lt;class _PredMerge&gt;    
+     void  merge ( bp_tree_array_acc &  that , _PredMerge  pred ) ;
+ 
+     void  sort ( ) ; 
+     template &lt;class _PredSort&gt;
+     void  sort ( _PredSort  pred ) ;
+  
+  
+     //  associative containers modifiers 
+     std::pair&lt;iterator, bool&gt;
+               insert ( const value_type &  x ) ;
+     iterator  insert ( iterator  pos , const value_type &  x ) ;
+     template &lt;class _InpIter&gt;
+     void      insert_set ( _InpIter  pos_a , _InpIter  pos_b ) ;
+     template &lt;class _InpIter&gt;
+     void      insert_map ( _InpIter  pos_a , _InpIter  pos_b ) ;
+  
+     size_type erase ( const key_type &  k ) ;
+  
+     void      merge_map ( bp_tree_array_acc &  that ) ;
+       
+     //  general containers modifiers 
+     void      clear ( ) ;     
+     iterator  erase ( iterator  pos ) ;
+     iterator  erase ( iterator  pos_a ,
+                       iterator  pos_b ) ;
+                        
+     iterator  split ( iterator             pos   ,
+                       bp_tree_array_acc &  that  ) ;
+     iterator  split ( iterator             pos_a ,
+                       iterator             pos_b ,
+                       bp_tree_array_acc &  that  ) ;
+  
+     void      swap  ( bp_tree_array_acc &  x ) ;    
+  
+     void      write_shallow ( iterator             pos     ,
+                               const mapped_type &  val_new ) ;
+     iterator  write_deep    ( iterator             pos     ,
+                               const value_type &   val_new ) ;
+ 
+ 
+     //  associative containers observers 
+     _Pred  key_comp ( ) const;
+  
+  
+     //  associative containers operations 
+     iterator        find  ( const key_type &  k ) ;
+     const_iterator  find  ( const key_type &  k ) const ;
+  
+     size_type       count ( const key_type &  k ) const ;    
+  
+     iterator        lower_bound ( const key_type &  k ) ;
+     const_iterator  lower_bound ( const key_type &  k ) const ;
+     iterator        upper_bound ( const key_type &  k ) ;
+     const_iterator  upper_bound ( const key_type &  k ) const ;
+  
+     std::pair&lt;iterator, iterator&gt;              
+                     equal_range ( const key_type &  k ) ;
+     std::pair&lt;const_iterator, const_iterator&gt;  
+                     equal_range ( const key_type &  k ) const ;
+  
+     //  specialized algorithms  
+     mapped_type     accumulate  ( const_iterator  pos_a  ,
+                                   const_iterator  pos_b  ,
+                                   mapped_type     val_in ) const ;
+ 
+ } ; 
+ 
+</pre> 
+
+
+<h3 class="h3_f1">
+    Description
+</h3>
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> template parameters
+</h4>
+<br>
+
+  <table class="tbl_f1">
+    <tr>
+        <td class="td_f1"><b>Parameter</b></td>  <td class="td_f1"><b>Description</b></td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>_Ty_Key</code></td>  
+        <td class="td_f1">
+            the key type of a container element;
+            the type must be <code>DefaultConstructible</code>, 
+            <code>CopyConstructible</code>, <code>Assignable</code>
+            and no-throw <code>Destructible</code>; 
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>_Ty_Map</code></td>  
+        <td class="td_f1">
+            the mapped value type of a container element;
+            the type must be <code>DefaultConstructible</code>, 
+            <code>CopyConstructible</code>, <code>Assignable</code>
+            and no-throw <code>Destructible</code>; 
+          <br>
+            the type must support arithmetic operators: <code>+, -, +=, -=</code>; 
+        </td> 
+    </tr>
+    <tr>
+        <td class="td_f1"><code>_Ty_Val</code></td>  
+        <td class="td_f1">
+            the value type of a container element;
+          <br>  
+            <code>_Ty_Key</code> represents the value type 
+            for <code>set</code>, <code>multiset</code>
+            and <code>sequence</code>;
+          <br>
+            <code>std::pair&lt;const _Ty_Key, _Ty_Map&gt;</code> 
+            represents the value type 
+            for <code>map</code> and <code>multimap</code>;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>_KeyOfV</code></td>  
+        <td class="td_f1">
+            the function object type; 
+            the function returns the key value of a container element; 
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>_MapOfV</code></td>
+        <td class="td_f1">
+            the function object type; 
+            the function returns the mapped value of a container element; 
+        </td>    
+        
+    </tr>
+    <tr>
+        <td class="td_f1"><code>_Pred</code></td>
+        <td class="td_f1">
+            the function object type; 
+            the function implements a strict weak ordering on the keys of the container elements; 
+            the function is used to define the equivalence relation; 
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>_Alloc</code></td>  
+        <td class="td_f1">
+            the allocator type responsible for all internal container memory management; 
+            the type must meet the <code>std::allocator</code> requirements; 
+            the allocator's value type is the same as the container's value type;             
+        </td>    
+    </tr>
+  </table>
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> types
+</h4>
+<br>
+
+  <table class="tbl_f1">
+    <tr>
+        <td class="td_f1"><b>Type</b></td>  <td class="td_f1"><b>Description</b></td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>value_type</code></td>  
+        <td class="td_f1">
+            the type of a container element;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>key_type</code></td>  
+        <td class="td_f1">
+            the type of the key value of a container element;         
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>mapped_type</code></td>  
+        <td class="td_f1">
+            the type of the mapped value of a container element;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>size_type</code></td>  
+        <td class="td_f1">
+            the unsigned integral type;
+            the type to represent the number of container elements,
+            the non-negative index to a container element 
+            and the position of an iterator; 
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>difference_type</code></td>  
+        <td class="td_f1">
+            the signed integral type;
+            the type of a signed distance between two iterators; 
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>pointer</code></td>  
+        <td class="td_f1">
+            the pointer to a container element;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>const_pointer</code></td>  
+        <td class="td_f1">
+            the constant pointer to a container element;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>reference</code></td>  
+        <td class="td_f1">
+            the reference to a container element;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>const_reference</code></td>  
+        <td class="td_f1">
+            the constant reference to a container element;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>iterator</code></td>  
+        <td class="td_f1">
+            the random access iterator to iterate through the container;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>const_iterator</code></td>  
+        <td class="td_f1">
+            the constant random access iterator to iterate through the container;
+        </td>    
+    </tr>
+
+  </table>
+<br>
+
+    <p class="p_f1"> 
+    In the following sections <code>T</code> represents the type of a container element <code>value_type</code>. 
+    </p>
+
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> constructors, copy, assignment and destructor 
+</h4>
+
+
+<pre class="pre_f1">
+bp_tree_array_acc ( const _Pred &   pred ,
+                    bool            mul  ,
+                    bool            ord  ,
+                    const _Alloc &  alr  ) ;
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    constructs an empty container; 
+    <code>pred</code> specifies the comparison object; 
+    <code>mul</code> specifies if the container stores elements with multiple equivalent or unique keys; 
+    <code>ord</code> specifies if the order of elements is preserved or not; 
+    <code>alr</code> specifies the allocator. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    an exception thrown by allocator 
+    when the required storage cannot be obtained. 
+    </p>
+
+
+<pre class="pre_f1">
+bp_tree_array_acc ( const bp_tree_array_acc &  that ) ;
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    constructs a container with copies of all the elements and 
+    data members of <code>that</code> container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N log N)</i>, where <i>N</i><code>=that.size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+bp_tree_array_acc &
+operator = ( const bp_tree_array_acc &  that ) ;
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    erases all the elements in the container and copies 
+    all the elements and data members of <code>that</code> container    
+    </p>    
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N + MlogM)</i>, where <i>N</i><code>=this->size()</code> 
+    prior to the assignment, <i>M</i><code>=that.size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+~bp_tree_array_acc ( ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    the destructor is applied to every element in the container,
+    all the memory is deallocated. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N)</i>, where <i>N</i><code>=size()</code>.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    nothing. 
+    </p>
+
+
+<pre class="pre_f1">
+_Alloc  get_allocator ( ) const;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    a copy of the allocator used to construct the container.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> iterators
+</h4>
+
+<pre class="pre_f1">
+iterator        begin ( ) ;
+const_iterator  begin ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    an iterator pointing to the first element in the container.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<pre class="pre_f1">
+iterator        end ( ) ;
+const_iterator  end ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    an iterator which is the past-the-end value for the container.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> capacity 
+</h4>
+
+
+<pre class="pre_f1">
+size_type  size ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the total number of elements in the container.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<pre class="pre_f1">
+size_type  max_size ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the number of elements in the largest possible container.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<pre class="pre_f1">
+bool  empty ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    <code>true</code> if the number of elements in the container is 0, 
+    else returns <code>false</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<pre class="pre_f1">
+size_type  capacity ( ) const ;    
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the number of elements in the largest possible container.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Note:</span>
+    the function has the same behaviour as the function <code>max_size()</code>,
+    since <code>bp_tree_array_acc</code> incrementally increases the storage; 
+    unlike <code>std::vector</code>, it does not reallocate 
+    the storage for all the elements in the container.
+    </p>
+
+
+<pre class="pre_f1">
+void  reserve ( size_type  sz ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    the function has no effect, since <code>bp_tree_array_acc</code> 
+    manages the storage using a method similar to 
+    dynamically allocated data structures. 
+    </p>    
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> sequence element access 
+</h4>
+
+
+<pre class="pre_f1">
+reference        operator[] ( size_type  i ) ;
+const_reference  operator[] ( size_type  i ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    the member function <code>empty()</code> returns <code>false</code> ; 
+    index <code>i</code> is in the valid range <code>0 <= i < size()</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    a reference to the <code>i</code>-th element of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+
+
+<pre class="pre_f1">
+reference        at ( size_type  i ) ;
+const_reference  at ( size_type  i ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    the member function <code>empty()</code> returns <code>false</code> ; 
+    index <code>i</code> is in the valid range <code>0 <= i < size()</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    a reference to the <code>i</code>-th element of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    <code>std::out_of_range</code> if <code>i >= size()</code>. 
+    </p>
+
+    
+<pre class="pre_f1">
+reference        front ( ) ;
+const_reference  front ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    the member function <code>empty()</code> returns <code>false</code>.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    a reference to the first element of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<pre class="pre_f1">
+reference        back ( ) ;
+const_reference  back ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    the member function <code>empty()</code> returns <code>false</code>.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    a reference to the last element of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> sequence modifiers 
+</h4>
+
+<pre class="pre_f1">
+iterator  _insert_seqce ( iterator            pos ,
+                          const value_type &  val ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>    
+    <code>pos</code> is a valid iterator of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the iterator pointing to the copy of <code>val</code>
+    inserted into the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts a copy of <code>val</code> before <code>pos</code>.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  _insert_seqce_count ( iterator            pos ,
+                            size_type           cnt ,
+                            const value_type &  val ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>    
+    <code>pos</code> is a valid iterator of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts <code>cnt</code> copies of <code>val</code> 
+    before <code>pos</code>.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O( Tlog(T) + log(S) )</i>, where <i>T</i><code>=cnt</code>,
+    <i>S</i><code>=max(</code> <i>T</i> , <code>size() )</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+template &lt;class _InpIter&gt;
+void  _insert_seqce_iter ( iterator  pos   ,
+                           _InpIter  pos_a ,
+                           _InpIter  pos_b ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>    
+    <code>pos</code> is a valid iterator of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts a copy of each element in the range 
+    <code>[pos_a, pos_b)</code> before <code>pos</code>.  
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O( Dlog(D) + log(S) )</i>, 
+    where <i>D</i><code>=std::distance(pos_a, pos_b)</code>,
+    <i>S</i><code>=max(</code> <i>D</i> , <code>size() )</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Note:</span>
+    the function does not place the restriction of 
+    <code>pos_a</code> and <code>pos_b</code>  
+    not being iterators into this container. 
+    </p>
+
+
+<pre class="pre_f1">
+void  push_front ( const value_type &  x ) ; 
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    prepends a copy of <code>x</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  push_back ( const value_type &  x ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    appends a copy of <code>x</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  pop_front ( ) ;    
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    the member function <code>empty()</code> returns <code>false</code>.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    erases the first element. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    only an exception thrown by the copy constructor or
+    assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  pop_back ( ) ;    
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    the member function <code>empty()</code> returns <code>false</code>.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    erases the last element.     
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    only an exception thrown by the copy constructor or
+    assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  resize ( size_type           sz_new ,
+               const value_type &  val    ) ;
+void  resize ( size_type           sz_new ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    if <code>sz_new <= size()</code> erases last <code>(size()-sz_new)</code> elements; 
+    if <code>size() < sz_new</code> appends <code>(sz_new - size())</code> 
+    copies of <code>val</code> or <code>value_type()</code> to the container.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  reverse ( ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    reverses the order of the elements in the container.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N log N)</i>, where <i>N</i><code>=size()</code>.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+
+<pre class="pre_f1">
+iterator  splice ( iterator             pos  ,
+                   bp_tree_array_acc &  that ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>pos</code> is a valid iterator of the container;    
+    <code>this != &that</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the iterator pointing to the element pointed to by <code>pos</code>
+    prior to the operation or iterator <code>end()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts all the elements of <code>that</code> before 
+    <code>pos</code> and makes <code>that</code> empty. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where
+    <i>N</i><code>=max( this->size() , that.size() )</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+    
+    
+<pre class="pre_f1">
+iterator  splice ( iterator             pos   ,
+                   bp_tree_array_acc &  that  ,
+                   iterator             pos_a ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>pos</code> is a valid iterator of the container;    
+    <code>pos_a</code> is a valid dereferenceable iterator of <code>that</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the iterator pointing to the element pointed to by <code>pos</code>
+    prior to the operation or iterator <code>end()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts an element pointed to by <code>pos_a</code> 
+    from <code>that</code> before <code>pos</code> 
+    and removes the element from <code>that</code>; 
+    the result is unchanged if <code>pos == pos_a</code> or 
+    <code>pos == ++pos_a</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where
+    <i>N</i><code>=max( this->size() , that.size() )</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+    
+
+<pre class="pre_f1">
+iterator  splice ( iterator             pos   ,
+                   bp_tree_array_acc &  that  ,
+                   iterator             pos_a ,
+                   iterator             pos_b ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>pos</code> is a valid iterator of the container;
+    <code>[pos_a, pos_b)</code> is a valid range of <code>that</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the iterator pointing to the element pointed to by <code>pos</code>
+    prior to the operation or iterator <code>end()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts elements in the range <code>[pos_a, pos_b)</code> 
+    before <code>pos</code> and removes the elements 
+    from <code>that</code>; the result is unchanged
+    <code>if ( this==&that ) &&  ( pos_a<=pos && pos&lt;pos_b ) )</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where
+    <i>N</i><code>=max( this->size() , that.size() )</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  remove ( const value_type &  val ) ;
+template &lt;class _PredRem&gt;        
+void  remove_if ( _PredRem  pred ) ; 
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    erases all the elements in the container 
+    pointed to by an iterator <code>iter</code> 
+    for which the following conditions hold: 
+    <code>*iter</code> is equivalent to <code>value</code> (the first version), 
+    <code>pred(*iter) != false</code> (the second version).
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  unique ( ) ; 
+template &lt;class _PredRem&gt;
+void  unique ( _PredRem  pred ) ;
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    eliminates all but the first element from every 
+    consecutive group of equivalent elements using 
+    the key equivalence predicate (for the first version) 
+    or <code>pred</code> (for the second version). 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+template &lt;class _PredMerge&gt;    
+void  merge ( bp_tree_array_acc &  that , _PredMerge  pred ) ;
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>pred</code> defines a strict weak ordering, and 
+    <code>*this</code> container and <code>that</code> container
+    are both sorted according to this ordering.
+    </p>    
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    merges <code>that</code> container 
+    into <code>*this</code> container.    
+    For a <code>set</code> the effect is the same as 
+    that of the union operation. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N log N)</i>, 
+    where <i>N</i><code>=this->size() + that.size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Note:</span>
+    in special cases this function is implemented through 
+    splice operations and has complexity <i>O(log N)</i>, 
+    where <i>N</i><code>=max( this->size() , that.size() )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  sort ( ) ; 
+template &lt;class _PredSort&gt;
+void  sort ( _PredSort  pred ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>pred</code> (for the second version) defines 
+    a strict weak ordering.
+    </p>    
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    sorts the elements in the container according to 
+    <code>key_comp()</code> (for the first version) or 
+    <code>pred</code> function object (for the second version).
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> associative containers modifiers 
+</h4>
+
+
+<pre class="pre_f1">
+std::pair&lt;iterator, bool&gt;
+insert ( const value_type &  x ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    The <code>bool</code> component of returned pair indicates 
+    whether the insertion takes place and the <code>iterator</code>
+    component of the pair points to the element with key 
+    equivalent to the key of <code>x</code>.     
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts a copy of <code>x</code> only if there is no element 
+    with key equivalent to the key of <code>x</code> in containers 
+    with unique keys; always inserts a copy of <code>x</code>
+    in containers with equivalent keys.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+iterator  insert ( iterator  pos , const value_type &  x ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>    
+    <code>pos</code> is a valid iterator of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the iterator pointing to the element with key 
+    equivalent to the key of <code>x</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts a copy of <code>x</code> only if there is no element 
+    with key equivalent to the key of <code>x</code> in containers 
+    with unique keys; always inserts a copy of <code>x</code>
+    in containers with equivalent keys.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+template &lt;class _InpIter&gt;
+void  insert_set ( _InpIter  pos_a , _InpIter  pos_b ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts a copy of each element in the range <code>[pos_a, pos_b)</code>
+    if and only if there is no element with key equivalent to 
+    the key of that element in containers with unique keys;
+    always inserts a copy of each element in containers with equivalent keys. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N log N)</i>, 
+    where <i>N</i><code>=size() + std::distance(pos_a, pos_b)</code>.
+    if ( <i>D</i> <code>&lt;&lt; size()</code> ), <i>O(D log(</i> <code>size()</code> <i>)</i>,     
+    where <i>D</i><code>=std::distance(pos_a, pos_b)</code>.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Note:</span>
+    the function does not place the restriction of 
+    <code>pos_a</code> and <code>pos_b</code>  
+    not being iterators into this container. 
+    </p>
+
+
+<pre class="pre_f1">
+template &lt;class _InpIter&gt;
+void  insert_map ( _InpIter  pos_a , _InpIter  pos_b ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts a copy of each element in the range <code>[pos_a, pos_b)</code>
+    if and only if there is no element with key equivalent to 
+    the key of that element in containers with unique keys;
+    always inserts a copy of each element in containers with equivalent keys. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N log N)</i>, 
+    where <i>N</i><code>=size() + std::distance(pos_a, pos_b)</code>.
+    if ( <i>D</i> <code>&lt;&lt; size()</code> ), <i>O(D log(</i> <code>size()</code> <i>)</i>,     
+    where <i>D</i><code>=std::distance(pos_a, pos_b)</code>.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Note:</span>
+    the function does not place the restriction of 
+    <code>pos_a</code> and <code>pos_b</code>  
+    not being iterators into this container. 
+    </p>
+
+
+<pre class="pre_f1">
+size_type  erase ( const key_type &  k ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the number of erased elements. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    erases all the elements in the container with key equivalent to <code>k</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log(N)</i> + <i>K)</i>, where <i>K</i><code>=count(k)</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    only an exception thrown by the copy constructor or
+    assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  merge_map ( bp_tree_array_acc &  that ) ;
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>*this</code> and <code>that</code> are containers of 
+    the <code>map</code> or <code>multimap</code> types. 
+    </p>    
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    merges <code>that</code> container 
+    into <code>*this</code> container.    
+    For a <code>map</code> the effect is the same as 
+    that of the union operation. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N log N)</i>, 
+    where <i>N</i><code>=this->size() + that.size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Note:</span>
+    in special cases this function is implemented through 
+    splice operations and has complexity <i>O(log N)</i>, 
+    where <i>N</i><code>=max( this->size() , that.size() )</code>. 
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> general containers modifiers 
+</h4>
+
+<pre class="pre_f1">
+void  clear ( ) ;     
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    erases all the elements in the container.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Postcondition:</span>
+    the member function <code>empty()</code> returns <code>true</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N)</i>, where <i>N</i><code>=size()</code>.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    nothing. 
+    </p>
+
+
+<pre class="pre_f1">
+iterator  erase ( iterator  pos ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>    
+    <code>pos</code> is a valid dereferenceable iterator of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the iterator pointing to the element immediately following 
+    <code>pos</code> prior to the element being erased, 
+    if no such element exists iterator <code>end()</code> is returned. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    erases the element pointed to by <code>pos</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    only an exception thrown by the copy constructor or
+    assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+iterator  erase ( iterator  pos_a ,
+                  iterator  pos_b ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>    
+    <code>[pos_a, pos_b)</code> is a valid range of the container.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the iterator pointing to the element pointed to by 
+    <code>pos_b</code> prior to any elements being erased, 
+    if no such element exists iterator <code>end()</code> is returned. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    erases the elements in the range <code>[pos_a, pos_b)</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log(N)</i> + <i>D)</i>, where <i>N</i><code>=size()</code>,     
+    <i>D</i><code>=std::distance(pos_a, pos_b)</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+    
+
+
+<pre class="pre_f1">
+void  swap ( bp_tree_array_acc &  x ) ;    
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    <code>a.swap(b)</code> exchanges elements of <code>a</code> and <code>b</code>.     
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<pre class="pre_f1">
+void  write_shallow ( iterator             pos     ,
+                      const mapped_type &  val_new ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>pos</code> is a valid dereferenceable iterator of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    <code>*pos = val_new ;</code>
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    only an exception thrown by
+    the assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+iterator  write_deep ( iterator            pos     ,
+                       const value_type &  val_new ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>pos</code> is a valid dereferenceable iterator of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the iterator pointing to the element with key 
+    equivalent to the key of <code>val_new</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+<pre>
+    pos_res = erase  ( pos ) ;
+    pos_res = insert ( pos_res , val_new ) ;
+</pre>
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> associative containers observers 
+</h4>
+
+<pre class="pre_f1">
+_Pred  key_comp ( ) const;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the comparison object out of which the container was constructed. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> associative containers operations 
+</h4>
+
+<pre class="pre_f1">
+iterator        find ( const key_type &  k ) ;
+const_iterator  find ( const key_type &  k ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    an iterator pointing to an element with the key equivalent to 
+    <code>k</code>, or <code>end()</code> if such an element is not found.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+
+  
+<pre class="pre_f1">
+size_type  count ( const key_type &  k ) const ;    
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the number of elements with key equivalent to <code>k</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+
+
+<pre class="pre_f1">
+iterator        lower_bound ( const key_type &  k ) ;
+const_iterator  lower_bound ( const key_type &  k ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    an iterator pointing to the first element with key not less than
+    <code>k</code>, or <code>end()</code> if such an element is not found.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.    
+    </p>
+
+
+<pre class="pre_f1">
+iterator        upper_bound ( const key_type &  k ) ;
+const_iterator  upper_bound ( const key_type &  k ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    an iterator pointing to the first element with key greater than 
+    <code>k</code>, or <code>end()</code> if such an element is not found.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.    
+    </p>
+
+
+<pre class="pre_f1">
+std::pair&lt;iterator, iterator&gt;              
+                equal_range ( const key_type &  k ) ;
+std::pair&lt;const_iterator, const_iterator&gt;  
+                equal_range ( const key_type &  k ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    <code>std::pair( lower_bound(k) , upper_bound(k) )</code> .
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.    
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>bp_tree_array_acc </code> specialized algorithms
+</h4>
+
+<pre class="pre_f1">
+mapped_type  accumulate ( const_iterator  pos_a  ,
+                          const_iterator  pos_b  ,
+                          mapped_type     val_in ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>[pos_a, pos_b)</code> is a valid range of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    <code>val_in + sum</code>, where <code>sum</code> is the sum 
+    of all the elements in the range <code>[pos_a, pos_b)</code> 
+    calculated in the sequential order.     
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log D)</i>, where <i>D</i><code>=std::distance(pos_a, pos_b)</code>.     
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    <code>std::range_error</code> if range 
+    <code>[pos_a, pos_b)</code> is invalid. 
+    </p>
+
+
+<br>
+<br>
+
+
+  <hr>
+
+  <p><a href="http://validator.w3.org/check?uri=referer"><img border="0" src=
+  "images/valid-html401.png" alt="Valid HTML 4.01 Transitional"
+  height="31" width="88"></a></p>
+
+  <p>Revised 
+  <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
+  22 September, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+
+  <p><i>Copyright &copy; 2012</i> 
+  <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>
+  </p>
+
+  <p><i>Distributed under the Boost Software License, Version 1.0. (See
+  accompanying file <a href="images/LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+  copy at <a href=
+  "http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)</i></p>
+
+
+  <hr>  
+  <div align="right">
+    <a href="bp_tree_array.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="bibliography.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+
+</body>
+</html>

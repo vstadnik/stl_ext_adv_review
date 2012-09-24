@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <link rel="stylesheet" type="text/css" href="../../../boost.css">
+  <link rel="stylesheet" type="text/css" href="images/bpt_styles.css">  
+
+  <title>iterators</title>
+</head>
+
+<body link="#0000FF" vlink="#800080">
+  <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+  "header">
+    <tr>
+      <td valign="top" width="300">
+        <h3><a href="../../../index.htm"><img height="86" width="277" alt=
+        "C++ Boost" src="images/boost.png" border="0"></a></h3>
+      </td>
+    </tr>
+  </table>
+  
+
+  <hr>  
+  <div align="right">
+    <a href="bp_trees_design.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="reference.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+
+
+<h2 align="left">
+    Random access iterators of array based B+ trees
+</h2>
+
+
+<div class="div_f1_frame"> 
+  <dl>
+    <dd class="dd_f1"><a class="link_under" href="#compxty">Complexity</a></dd>
+    <dd class="dd_f1"><a class="link_under" href="#invaldn">Iterator invalidation</a></dd>
+  </dl>
+</div>
+<br>
+
+
+    <p>
+    A random access iterator of an array based B+ tree is 
+    a generalization of a position of a container element in a sequence. 
+    This iterator implements mapping of non-negative integers 
+    into container elements using an index and a pointer to 
+    a node with a container element. 
+    </p>
+
+    <p>
+    The classes of random access iterators do not place any limit on
+    the index value. For any position outside the valid range of 
+    a container <code>[0, size)</code>, the iterator pointer has one value 
+    that is the address of an external end node. 
+    This approach provides the efficient support for many operators 
+    <code>{ ==, !=, &lt;, &lt;=, &gt;, &gt;=, - }</code>. 
+    The cost of these operators is <i>O(1)</i> and is the same as 
+    that for pointer based iterators of <code>std::vector</code>.    
+    </p>
+
+    <p>
+    The increment and decrement operators use the arrangement and 
+    the connectivity of external nodes that guarantee constant cost of
+    obtaining a next or a previous element of a current container element. 
+    The operators <code>{+=, -=, +, -}</code> are based on efficient 
+    search algorithms through internal levels of the B+ trees. 
+    In the worst case these operators have cost <i>O(log N)</i>. 
+    The cost of sequential access to each container element 
+    through an iterator is <i>O(N)</i>. Algorithms that frequently 
+    visit distant elements can be less efficient.     
+    </p>
+
+    <p>
+    The index value of a container element pointed to by an iterator 
+    can be retrieved using one the following methods:
+    </p>
+<pre>
+    index = std::distance ( contr.begin() , iter ) ; // or
+    index = iter - contr.begin() ;
+</pre> 
+    <p>Each of these two options has constant cost.
+
+
+    <a name="compxty"></a>
+    <h4 class="h4_f1">
+    Complexity
+    </h4>
+
+    <p>
+    The random access iterators of the array based B+ trees 
+    do not completely conform to the C++ standard, since 
+    a number of operators have logarithmic complexity. 
+    In the following table <i>N</i> is 
+    the number of the container elements.    
+    </p>
+
+  <table class="tbl_f1">
+    <caption class="cap_f1">
+        The complexity of operators and STL functions using iterators
+    </caption>
+    <tr>
+        <td class="td_f1"><code>operator ++      </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator --      </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator ++ (int)</code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator -- (int)</code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator +=      </code></td>  <td class="td_f1"><i>O(log N)</i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator -=      </code></td>  <td class="td_f1"><i>O(log N)</i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator +       </code></td>  <td class="td_f1"><i>O(log N)</i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator -       </code></td>  <td class="td_f1"><i>O(log N)</i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator ==      </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator !=      </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator <       </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator <=      </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator >       </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator >=      </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator *       </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator ->      </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>operator [ ]     </code></td>  <td class="td_f1"><i>O(log N)</i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>iter_a - iter_b  </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>std::distance()  </code></td>  <td class="td_f1"><i>O(1)    </i></td>    </tr>
+    <tr>
+        <td class="td_f1"><code>std::advance()   </code></td>  <td class="td_f1"><i>O(log N)</i></td>    </tr>
+  </table>
+<br>
+
+
+    <a name="invaldn"></a>
+    <h4 class="h4_f1">
+    Iterator invalidation
+    </h4>
+
+
+    <p>
+    Unlike <code>std::vector</code> that stores all its elements 
+    contiguously, an array based B+ tree allocates a list of 
+    contiguous storage blocks of a fixed size. The number of
+    blocks depends on the number of the container elements. 
+    A modifying operation in these data structures can cause 
+    reallocation of the storage blocks. 
+    </p>
+
+    <p>
+    The member functions modifying the container invalidate
+    all the iterators, references and pointers that prior to 
+    the modifying operation point to:<br>
+    - the erased elements;<br>
+    - the elements at the positions after the position of 
+    the modifying operation;
+    </p>
+
+    <p>
+    If no reallocation of the storage happens, all the iterators
+    and references before the position of the modifying operation
+    remain valid. 
+    </p>
+
+    <p>
+    Reallocation of the storage invalidates the iterators and 
+    references pointing to the positions before the position of 
+    the modifying operation within a distance defined by the size
+    of one storage block. The distance is an implementation
+    specific parameter. 
+    </p>
+
+
+  <hr>
+
+  <p><a href="http://validator.w3.org/check?uri=referer"><img border="0" src=
+  "images/valid-html401.png" alt="Valid HTML 4.01 Transitional"
+  height="31" width="88"></a></p>
+
+  <p>Revised 
+  <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
+  22 September, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+
+  <p><i>Copyright &copy; 2012</i> 
+  <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>
+  </p>
+
+  <p><i>Distributed under the Boost Software License, Version 1.0. (See
+  accompanying file <a href="images/LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+  copy at <a href=
+  "http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)</i></p>
+
+
+  <hr>  
+  <div align="right">
+    <a href="bp_trees_design.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="reference.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+
+
+</body
+</html>

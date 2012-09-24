@@ -1,0 +1,699 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <link rel="stylesheet" type="text/css" href="../../../boost.css">
+  <link rel="stylesheet" type="text/css" href="images/bpt_styles.css">  
+
+  <title>b_plus_trees</title>
+</head>
+
+<body link="#0000FF" vlink="#800080">
+  <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+  "header">
+    <tr>
+      <td valign="top" width="300">
+        <h3><a href="../../../index.htm"><img height="86" width="277" alt=
+        "C++ Boost" src="images/boost.png" border="0"></a></h3>
+      </td>
+    </tr>
+  </table>
+
+
+  <hr>  
+  <div align="right">
+    <a href="examples.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="iterators.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+
+
+<h2 align="left">    
+    Design and implementation of B+ trees
+</h2>
+
+
+<div class="div_f1_frame"> 
+  <dl>
+    <dd class="dd_f1"><a class="link_under" href="#advan">Advantages of B+ trees</a></dd>
+    <dd class="dd_f1"><a class="link_under" href="#types_nodes">Types of internal and external nodes</a></dd> 
+    <dd class="dd_f1"><a class="link_under" href="#connect">Connectivity of nodes</a></dd>
+    <dd class="dd_f1"><a class="link_under" href="#balance">Balance</a></dd> 
+    <dd class="dd_f1"><a class="link_under" href="#lev_linked">Level-linked structure</a></dd>
+    <dd class="dd_f1"><a class="link_under" href="#data_scheme">Data scheme</a></dd>
+    <dd class="dd_f1"><a class="link_under" href="#eff_accum">Efficient algorithm <code>accumulate()</code></a></dd> 
+    <dd class="dd_f1"><a class="link_under" href="#eff_splice">Efficient <code>splice()</code> and <code>split()</code> algorithms</a></dd> 
+    <dd class="dd_f1"><a class="link_under" href="#write_oper">Write operations</a></dd>
+    <dd class="dd_f1"><a class="link_under" href="#enh_alloc">Array based B+ trees as enhanced allocators</a></dd> 
+    <dd class="dd_f1"><a class="link_under" href="#main_diff">Main difference between dynamically allocated and array based B+ trees</a></dd> 
+  </dl>
+</div>
+<br>
+
+
+    <p>
+    This section provides a brief discussion of the properties and implementation 
+    details of the augmented B+ trees. It aims to help programmers 
+    to better understand the specifics of new containers and how to use 
+    them in algorithms. The discussion covers both array based and 
+    dynamically allocated B+ trees. 
+    </p>
+
+
+    <a name="advan"></a>
+    <h4 class="h4_f1">
+    Advantages of B+ trees
+    </h4>
+
+    <p>
+    A B+ tree is a data structure that supports efficient search, retrieval and 
+    update operations of stored information. A B+ tree can be regarded as an improved 
+    variant of a B-tree, which was originally developed for systems with external 
+    storage [<a href="bibliography.html">2</a>]. 
+    </p>
+    
+    <p>
+    The main problem of these B-trees is their inefficiency in range queries and 
+    sequential processing of data. In a B-tree representing a sorted list a tree 
+    traversal algorithm that finds a next element in the worst case visits 
+    <i>O(log N)</i> nodes at different levels of the tree. Crossing levels in these 
+    trees has a very high cost due to a huge difference in access time between 
+    the disks and RAM.
+    </p>
+    
+    <p>
+    For B-trees in main memory, as well as for red-black trees, the cost of crossing 
+    levels is significantly lower than in external storage trees and sequential processing 
+    is relatively fast. Nevertheless, the structure of nodes remains the same and some 
+    adjacent elements of a sorted list are connected through a path of length <i>O(log N)</i>. 
+    Thus, sequential processing in these trees is less efficient than in linear data 
+    structures, which guarantee that an algorithm can move to a next element in constant time. 
+    </p>
+    
+    <p>
+    A B+ tree solves these inefficiency problems by combining two data structures with 
+    different properties. User data are stored in a linear structure such as a linked list  
+    that implements simple and efficient sequential access to the data. The other data 
+    structure is a B-tree, which is connected to the linear structure. This tree stores only 
+    keys and supports fast search and random access to the data.
+    </p>
+    
+    <p>
+    The B+ trees have a number of practically important advantages. This class 
+    of data structures is one of the most thoroughly studied at present. 
+    There are many implementations of B+ trees, which gain from specific 
+    system optimizations. 
+    These trees offer a high degree of flexibility in the choice of a linear data 
+    structure for the deepest level and a specific B-tree for internal nodes and levels. 
+    For example, 
+    in systems for external searching a B+ trees can have a very complex structure 
+    with one node representing another data structure such as a binary search tree. 
+    On the other hand, 
+    a B+ tree designed to work in main memory can be implemented as a dynamically 
+    allocated or an array based data structure with the complexity reduced to 
+    minimal in order to support required algorithms and interfaces only. 
+    </p>
+
+    <p>    
+    The B+ trees of this project are level-linked variants of this data structure, 
+    for more details see [<a href="bibliography.html">3</a>] and below. 
+    Level-linked B+ trees are particularly attractive for the development of new STL 
+    containers, since they can be implemented in RAM using simple linear 
+    topologies of linked lists not only for external nodes, but also for any other level 
+    of a tree. Thus, algorithms gain the advantage of efficient access to data stored 
+    in both external and internal nodes. In addition to this, these B+ trees 
+    improve performance of algorithms through the method of augmenting data 
+    structures [<a href="bibliography.html">4</a>]. 
+    </p>
+
+
+    <a name="types_nodes"></a>
+    <h4 class="h4_f1">
+    Types of internal and external nodes
+    </h4>
+    
+    <p>
+    The implementation of a B+ tree requires different types of nodes, since user data 
+    are stored only in external nodes arranged into a linear data structure. 
+    In the augmented B+ trees an external node is represented by a type, which is 
+    named light node, since a node of this type contains the minimum of required data. 
+    In dynamically allocated B+ trees a light node stores a container element and 
+    three links to adjacent nodes. 
+    In array based B+ trees the pointer arithmetic provides the efficient 
+    constant time access to any element inside an array. 
+    It makes links to previous and next nodes redundant and, thus, 
+    allows for saving space required for an array based B+ tree. 
+    </p>
+    
+    <p>    
+    An internal node is represented by a heavy node. 
+    A node of this type contains four links to support a level-linked variant of 
+    a B+ tree and special implementation data, which improve the performance 
+    of algorithms. Instead of a key, a heavy node stores a pointer to a light node. 
+    This pointer is used both for connectivity and for access to a container element.
+    The name heavy node has been selected, since a node of this type stores more 
+    information than a light node. Nevertheless, in applications it is possible that a 
+    light node requires more space than a heavy node. The size of a light node depends 
+    on the size of a container element stored in the node, whereas the size of a heavy 
+    node is constant, since this node includes only a pointer to a light node.
+    </p>
+    
+    <a name="connect"></a>
+    <h4 class="h4_f1">
+    Connectivity of nodes
+    </h4>
+
+    <p>
+    The augmented B+ trees are implemented as multi-linked data structures 
+    using a representation similar to leftmost child, 
+    right sibling representation of a multi-way tree. 
+    Each internal node of these B+ trees contains four links pointing to 
+    its right sibling, left sibling, parent and leftmost child. 
+    A group of child nodes in an internal level forms a doubly linked list. 
+    This connectivity gives the advantage of simple and fast 
+    sequential access to data in these nodes. 
+    </p>    
+    
+    <p>    
+    A group of external child nodes also forms a linear data structure. 
+    In a dynamically allocated B+ tree the group is represented by 
+    a doubly linked list. In an array based B+ tree the same group 
+    is represented by an array of light nodes. 
+    </p>    
+    
+    <p>    
+    Unlike internal nodes, external nodes do not contain redundant 
+    links to children; however, they can support links to parents. 
+    This type of link improves the efficiency of the bottom up processing, 
+    which updates cached algorithmic data in internal nodes, when a tree is modified. 
+    </p>    
+    
+    <p>    
+    An internal node can be a parent to the children, which are 
+    a group of either internal or external nodes. 
+    In the latter case, a link to the leftmost child is supported 
+    through a pointer to an external node, 
+    which is also used to obtain a value of a container element.    
+    </p>
+
+
+    <a name="balance"></a>    
+    <h4 class="h4_f1">
+    Balance
+    </h4>
+
+    <p>
+    For a B+ tree with a minimum degree of a node <i>t</i> (<i>t</i> >= 2) the bounds 
+    on the number of children are defined and implemented as follows. Each internal node 
+    can have at most 2<i>t</i> children and at least <i>t</i> children. The number of 
+    children for an internal node can be less than <i>t</i> if this node is the root, 
+    including the case when the total number of user elements stored in external nodes 
+    is also less than <i>t</i>.    
+    </p>
+
+    <p>
+    The array based B+ tree can support two minimum degree parameters: 
+    one for internal dynamically allocated nodes and one for external nodes 
+    stored in arrays of the deepest level of a tree. The higher efficiency 
+    of the pointer arithmetic, the greater the value of the minimum degree 
+    can be set for an external level. This property of the array based B+ trees 
+    is useful to increase locality of reference and improve performance of algorithms. 
+    </p>
+
+
+    <a name="lev_linked"></a>
+    <h4 class="h4_f1">
+    Level-linked structure
+    </h4>
+
+    <p>
+    In a B+ tree all external nodes have the same depth. This property makes a B+ tree 
+    globally balanced and enables the modification of the structure, which is known as a 
+    level-linked B+ tree [<a href="bibliography.html">3</a>]. A B+ tree of this type 
+    arranges internal nodes of one level into a linked list.
+    </p>
+    
+    <p>
+    The level-linked connectivity provides algorithms the advantage of efficient sequential 
+    access to internal nodes and to data stored in these nodes at every level of the tree. 
+    It reduces the maximum cost of visiting a neighbour node at the same level from 
+    <i>O(log N)</i> using a tree traversal algorithm to <i>O(1)</i> using a level link.
+    </p>
+
+    <p>
+    As an algorithm moves up the tree, the number of nodes in every level decreases with 
+    the mean frequency 3<i>t</i>/2. Simultaneously, the number of external nodes with 
+    container elements connected to an internal node through child-parent links increases 
+    by the same factor. Thus, an algorithm can use the upper levels of the tree in order to 
+    vary the length and precision of iteration steps. 
+    </p>
+    
+    <p>
+    The current augmented B+ trees support level-linked structure of internal levels 
+    through links between the rightmost node of a child group with the leftmost 
+    node of the next child group at the same level. In a dynamically allocated B+ tree 
+    the deepest level of external nodes represents a doubly linked list. 
+    In an array based B+ tree every child group of external nodes is stored inside one array. 
+    The pointer arithmetic provides efficient access to any element inside an array. 
+    The connectivity between adjacent groups of external nodes 
+    is supported through links to nodes of the deepest internal level. 
+    </p>
+
+
+    <a name="data_scheme"></a>    
+    <h4 class="h4_f1">
+    Data scheme
+    </h4>
+    
+    <p>
+    B+ trees allow various schemes of data association with internal nodes 
+    for the same structure and user data stored in the deepest level of 
+    external nodes. This fact makes the method of augmenting data 
+    structures [<a href="bibliography.html">4</a>], see the chapter 
+    &quot;Augmenting Data Structures&quot;, particularly attractive for B+ trees. 
+    It improves the efficiency of algorithms by eliminating unnecessary 
+    searches and recalculations of required data. 
+    </p>                            
+    
+    <p>
+    The augmented B+ trees are designed to extend the functionality of search trees. 
+    The new functionality and improved efficiency of algorithms are achieved by 
+    storing in the internal nodes of these trees not only keys of container elements, 
+    but also special implementation data. The additional data can have some effect on 
+    the space usage, however, they do not change the theoretical limit of the space 
+    requirement to store a B+ tree, which is <i>O(N)</i>. 
+    Regardless of a specific data scheme the augmented B+ trees 
+    have the same structure of internal and external nodes. 
+    The balanced augmented B+ trees grow and contract in the same way 
+    as basic search trees. 
+    </p>                            
+    
+    <p>
+    In every augmented B+ tree that supports random access iterators 
+    an internal node contains a counter of external nodes 
+    with user elements stored in a container. 
+    For the deepest level of internal nodes this parameter represents 
+    the number of children in one group of external nodes. 
+    For internal nodes in all other levels the value of this parameter 
+    in a parent node is equal to the sum of counters stored in its children. 
+    An algorithm can efficiently obtain and update 
+    these counters using the level-linked structure of the tree. 
+    </p>
+    
+    <p>
+    The values of the counters of the container elements are independent of 
+    specific user and implementation data stored in external and internal nodes of the tree. 
+    These values reflect only the structural relationships between the nodes of the tree. 
+    This is why the counters data along with the connectivity of nodes can be regarded as 
+    an independent substructure of indices. 
+    The following figure shows the structure of indices of an array based B+ tree.     
+    </p>
+
+    <p>
+    <img alt="" src="images/figure_1.png" style="height: 500px; width: 870px" />    
+    </p>
+    <table class="style1">
+        <tr>
+            <td class="style2">
+            </td>
+            <td>
+                <b>Figure 1.</b> An array based B+ tree with the minimum degree <i>t</i>=2 and 
+                an array storing the same elements.                 
+                <br>
+                The array elements and their indices are shown in the line with 
+                contiguous arrangement of squares. 
+                In the B+ tree squares represent external nodes with values of 
+                container elements, circles - internal nodes, solid lines - undirected 
+                edges, arrows - directed child-parent edges. 
+                The deepest level of the B+ tree implements a partition of the array into 
+                a list of sub-arrays. Values in internal nodes of the B+ tree represent 
+                counters of elements. Empty cells in sub-arrays of external nodes do not 
+                store container elements. They are reserved for new elements to be 
+                inserted into the tree. The dashed lines connect first elements in sub-arrays of 
+                external nodes of the tree with corresponding elements in the array. 
+            </td>
+        </tr>
+    </table>
+    
+    
+    
+    <p>
+    The method of augmenting data structures can be applied to one data structure 
+    more than one time. This project uses double augmenting to implement the efficient 
+    algorithm <code>accumulate()</code>, which has computational cost <i>O(log N)</i> 
+    in the worst case. 
+    This performance has been achieved by adding to every internal node a new datum, 
+    which represents a sum of consecutive elements stored in external nodes. 
+    For the deepest level of internal nodes a parent stores a sum of values of 
+    the container elements of its external child nodes. For all other levels of 
+    the internal nodes of the tree every parent stores a sum, which is equal to 
+    a sum of sum values stored in its children. When an algorithm moves up the tree 
+    from a child to its parent, it obtains a sum value of a quickly increasing 
+    number of container elements stored in external nodes.
+    </p>
+
+    <p>
+    <img alt="" src="images/figure_2.png" style="height: 350px; width: 760px" />    
+    </p>
+    <table class="style1">
+        <tr>
+            <td class="style2">
+            </td>
+            <td>
+                <b>Figure 2.</b> The substructure of sums of a dynamically allocated B+ tree. 
+                <br>
+                Squares represent external nodes with values of container elements, 
+                circles - internal nodes, solid lines - undirected edges, arrows - directed 
+                child-parent edges. A value in an internal parent node is a sum of values 
+                shown in its children.                
+            </td>
+        </tr>
+    </table>
+
+    
+    <p>
+    Unlike the substructure of indices, the substructure of sums depends on the values of 
+    container elements stored in the external nodes of the tree. The specific values of 
+    sum data in internal nodes are also affected by the structural relationships between nodes. 
+    For this reason, the substructures of indices and sums have a very close similarity. In the 
+    case when each element of a container has the value 1, these two substructures become identical. 
+    In this respect, the substructure of sums supersedes the substructures of indices.
+    </p>
+    
+
+    <a name="eff_accum"></a>
+    <h4 class="h4_f1">
+    Efficient algorithm <code>accumulate()</code> 
+    </h4>
+   
+    <p>
+    The efficient algorithm <code>accumulate()</code> represents a finger search 
+    [<a href="bibliography.html">3</a>], 
+    The start and end positions are specified by two input iterators 
+    that provide pointers to corresponding external nodes. 
+    The algorithm uses the level-linked substructure of indices 
+    in order to find between these two external nodes a path, 
+    which has the minimum or close to the minimum number of edges. 
+    For distant external nodes the path goes through internal nodes, 
+    which store pre-calculated sums of container elements. 
+    The required sum of consecutive elements is obtained 
+    by summing up the values of elements in external nodes and 
+    the cached sum values in internal nodes when this algorithm moves to 
+    a next node at the same level of the tree or, in other words, passes 
+    through a horizontal link.
+    </p>
+    
+    <p>
+    The finger search algorithm has cost <i>O(log D)</i>, where <i>D</i> 
+    is the number of consecutive container elements. This algorithm also 
+    provides high accuracy of the calculated sum. Its accuracy is practically 
+    the same as that of the standard algorithm <code>accumulate()</code>, 
+    which sums up values of container elements in the forward sequential order.
+    </p>
+    
+    <p>
+    Note that the member function <code>accumulate()</code> of one basic container 
+    supports many types of STL containers: sequences and associative containers. 
+    This approach is general, since at the implementation level of this efficient 
+    algorithm every container is processed as a sequence through the substructure of 
+    indices, which is independent of the other substructure of sums. 
+    The efficient algorithm <code>accumulate()</code> demonstrates an important 
+    aspect of the augmented B+ trees - the ability to simultaneously support 
+    two substructures of two data sets associated with container elements. 
+    </p>     
+
+
+    <a name="eff_splice"></a>    
+    <h4 class="h4_f1">
+    Efficient <code>splice()</code> and <code>split()</code> algorithms
+    </h4>
+
+    <p>
+    The augmented B+ trees support the C++ standard <code>splice()</code> 
+    functions as well as non-standard <code>split()</code> functions. 
+    These functions are very efficient, since they are based on local 
+    structural modifications of these trees. 
+    </p>
+
+    <p>
+    The <code>splice()</code> functions of the augmented B+ trees have been 
+    implemented through algorithms that join and split trees. 
+    These algorithms take advantage of the relatively 
+    simple level-linked structure of the augmented B+ trees. 
+    Every internal level of these trees represents a doubly linked list. 
+    A structural modification of join or split is first applied to 
+    every horizontal list of the trees involved. 
+    After that, every level of the B+ trees is tested for the balance 
+    in groups of child nodes modified by the join or cut operation. 
+    Testing and restoring the balance are local operations for every level of the trees. 
+    Since these algorithms are applied to every level of the B+ trees, 
+    the basic functions that join and split trees have logarithmic computational cost. 
+    </p>
+
+    <p>
+    The <code>splice()</code> is a member function of <code>sequence</code> only, 
+    because this function does not preserve the order of container elements. 
+    On the other hand, the split operation does not violate the ordering in 
+    modified containers. This is why it is a general operation that can be 
+    supported by sequences and accociative containers. 
+    </p>
+
+    <p>
+    Both split and splice operations do not change the total number of elements 
+    in containers involved before and after an operation. This property enables 
+    the implementation of a split operation through a splice operation 
+    using an empty container. 
+    However, the <code>splice()</code> member function is not safe for 
+    associative containers, thus, the <code>split()</code> member function 
+    should be directly added to the interfces of all containers. 
+    </p>
+    
+    <p>
+    All associative containers of the namespace <code>std_ext_adv</code> 
+    support the member function <code>merge()</code>. 
+    This function implements a join operation for associative containers 
+    with multiple equivalent elements, since it does not change 
+    the total number of elements in the containers involved. 
+    For containers with unique elements the function has 
+    the effect of the union operation. 
+    In special cases the function <code>merge()</code> 
+    is equivalent to the <code>splice()</code> function. 
+    This fact has been used at the implementation level 
+    to achieve the best performance. 
+    Note that in the C++ standard library the function <code>merge()</code> 
+    is supported by the container <code>std::list</code>. 
+    </p>
+
+    <p>
+    Dynamically allocated linked lists provide various efficient splice 
+    operations through the change of the connectivity between a few nodes only. 
+    The <code>splice()</code> functions of <code>std::list</code> have 
+    constant computational cost except for the one function 
+    </p>
+<pre>
+    void splice(iterator pos, list& x, iterator first, iterator last);
+</pre>
+    <p>
+    which has linear cost. The inefficiency is caused by counting of inserted 
+    and removed elements in order to comply with the C++ standard requirement 
+    that the <code>size()</code> function has constant cost. 
+    The same problem of linear cost of recounting of moved elements arises in CGAL 
+    with red black trees that support split and join operations of 
+    <a href="http://www.cgal.org/Manual/latest/doc_html/cgal_manual/STL_Extension_ref/Class_Multiset.html">
+    <code>Multiset</code></a>. 
+    Note that both discussed containers provide bidirectional iterators only. 
+    </p>
+    
+    <p>
+    This inefficiency problem shows that the ability of the augmented B+ trees 
+    to support random access iterators plays the crucial role in achieving 
+    the high efficiency of <code>splice()</code> and <code>split()</code> 
+    functions that can move any number of consecutive 
+    elements in logarithmic time. Using random access iterators 
+    algorithms obtain the number of moved elements in constant time. 
+    </p>
+    
+
+    <a name="write_oper"></a>
+    <h4 class="h4_f1">
+    Write operations
+    </h4>
+
+    <p>
+    The C++ standard library provides a number of interface methods to change 
+    or update the value of a container element. The most general method is 
+    to write a new value to an element through an iterator: <code>*iter = val_new</code>. 
+    In addition to this, <code>vector</code> and <code>deque</code> support the subscript 
+    <code>operator[ ]</code> and the member function <code>at()</code>. 
+    </p>
+
+    <p>
+    For the new containers based on augmented data structures these methods are safe 
+    only for <code>sequence</code> using the class <code>bp_tree_array</code>. 
+    This data structure stores container elements only in the external nodes of 
+    the deepest level. The operation, which writes a new value to an element in 
+    an external node through an iterator, is identical to such an operation in 
+    any linear data structure and has constant computational cost. After the element 
+    has been modified, all connected internal nodes operate with the new value, 
+    since they access the modified element through pointers to the external node. 
+    </p>
+
+    <p>
+    For the containers based on the class <code>bp_tree_array_acc</code> 
+    the support for correct write operations is more complex. 
+    This B+ tree stores in its internal nodes additional sum data 
+    required for the efficient algorithm <code>accumulate()</code>. 
+    A write operation, which changes the value of an element in an external node 
+    only, makes the additional sum data invalid in a number of internal  nodes. 
+    The simple write operation is unsafe for all types of containers based on the 
+    class <code>bp_tree_array_acc</code>. In order to maintain the tree data valid, 
+    the change in the element value must be properly reflected in the sum data 
+    in a chain of parent nodes at every level of the tree. 
+    For this reason in the class <code>bp_tree_array_acc</code> 
+    the safe write operation has cost <i>O(log N)</i>. 
+    </p>
+
+    <p>
+    The problem of unsafe write operations can arise in the future 
+    for augmented data structures implementing new STL extensions or
+    new efficient algorithms. The member function 
+    </p>
+<pre>    
+    std::pair&lt;iterator, bool&gt;
+    write ( iterator  pos , const value_type &  val_new ) ;
+</pre>    
+    <p>
+    has been added to address all types of the data invalidation problems 
+    that can be caused by the standard write methods. This function guarantees 
+    that a container remains in a valid state after an element has been modified. 
+    It can be used in code instead of the discussed above operations, 
+    such as <code>*iter=val_new</code>. 
+    </p>
+
+    <p>
+    This member function is supported by every STL container of 
+    the namespace <code>std_ext_adv</code> with the computational 
+    complexity varying from <i>O(1)</i> to <i>O(log N)</i>. 
+    The effect of this function for each container type 
+    is equivalent to two operations that erase an old element 
+    pointed to by an input iterator and insert a new element. 
+    The function does not change the number of elements in a container. 
+    Algorithms using this function gain the additional advantage of being able 
+    to implement more generic algorithms.    
+    </p>
+    
+    
+    <a name="enh_alloc"></a>    
+    <h4 class="h4_f1">
+    Array based B+ trees as enhanced allocators 
+    </h4>
+
+    <p>
+    The array based B+ trees of this project have a number of properties that 
+    make them similar to pool allocators [<a href="bibliography.html">1</a>]. 
+    This type of C++ allocator is frequently used to improve performance of 
+    dynamically allocated data structures, such as linked lists or red black trees.
+    </p>
+
+    <p>
+    A pool allocator normally represents a simple linked list of memory blocks. 
+    An array based B+ tree has basically the same structure of the deepest level 
+    when the number of container elements is relatively small. The tree constructs 
+    and stores arrays of light nodes with container elements in contiguous regions of 
+    memory blocks. As a user algorithm adds new elements, the complexity of 
+    the structure of the B+ tree increases. It constructs new levels of internal nodes 
+    in order to deliver the best possible performance of container operations. 
+    </p>
+    
+    <p>
+    The dynamics of memory blocks and elements stored in an array based B+ tree and 
+    in a pool allocator are identical. A B+ tree allocates large memory blocks and 
+    uses them to control the lifetime of container elements. 
+    The elements are created and destroyed in the memory space owned by the tree 
+    through the customized allocation and deallocation of container elements that is 
+    more efficient than  general C++ operators <code>new</code> and <code>delete</code>. 
+    These B+ trees minimize the frequency of costly system allocations and 
+    deallocations of memory blocks. 
+    If the total number of elements in a memory block does not exceed 
+    its capacity limit, the block can be used to construct and destroy 
+    an unlimited number of container elements before the block is freed. 
+    </p>
+
+    <p>
+    Because of these structural and dynamical properties, an array based B+ tree 
+    represents an enhanced and optimized allocator. Alternatively, an array 
+    based B+ tree can be regarded as a data structure that implements 
+    the functionality of an allocator using its own memory space. 
+    </p>
+
+
+    <p>
+    However, an array based B+ tree does not guarantee that a container element will be 
+    stored in a memory region that remains unchanged for the whole lifetime of the element. 
+    These B+ trees are optimized for the best performance through 
+    the contiguous arrangement of container elements in memory blocks. 
+    In order to avoid gaps and minimize memory fragmentation update operations 
+    can move container elements inside memory blocks. 
+    </p>
+    
+    
+    <a name="main_diff"></a>
+    <h4 class="h4_f1">
+    Main difference between dynamically allocated and array based B+ trees
+    </h4>
+
+    <p>
+    The dynamically allocated augmented B+ trees require a pointer machine 
+    and provide efficient sequential and random access to container elements. 
+    In some aspect, these data structures implement the pointer arithmetic. 
+    The array based augmented B+ trees take advantage of the pointer arithmetic 
+    provided by a system and deliver significantly better performance 
+    for many container operations against equivalent variants of 
+    dynamically allocated trees. 
+    </p>
+
+    <p>
+    An array based B+ tree implements a general and portable partition of 
+    an array into a list of sub-arrays connected to a B-tree. 
+    These B+ trees maximize locality of reference by storing 
+    consecutive container elements in contiguous memory regions. 
+    However, as with many array based data structures, 
+    the performance benefit comes at the expense of the 
+    invalidation of random access iterators by update operations. 
+    </p>
+    
+
+  <hr>
+
+  <p><a href="http://validator.w3.org/check?uri=referer"><img border="0" src=
+  "images/valid-html401.png" alt="Valid HTML 4.01 Transitional"
+  height="31" width="88"></a></p>
+
+  <p>Revised 
+  <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
+  22 September, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+
+  <p><i>Copyright &copy; 2011-2012</i> 
+  <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>
+  </p>
+
+  <p><i>Distributed under the Boost Software License, Version 1.0. (See
+  accompanying file <a href="images/LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+  copy at <a href=
+  "http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)</i></p>
+
+
+  <hr>  
+  <div align="right">
+    <a href="examples.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="iterators.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+
+
+</body
+</html>

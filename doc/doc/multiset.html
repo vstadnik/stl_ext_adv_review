@@ -1,0 +1,882 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <link rel="stylesheet" type="text/css" href="../../../boost.css">
+  <link rel="stylesheet" type="text/css" href="images/bpt_styles.css">  
+
+  <title>multiset</title>
+</head>
+
+<body link="#0000FF" vlink="#800080">
+  <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+  "header">
+    <tr>
+      <td valign="top" width="300">
+        <h3><a href="../../../index.htm"><img height="86" width="277" alt=
+        "C++ Boost" src="images/boost.png" border="0"></a></h3>
+      </td>
+    </tr>
+  </table>
+
+
+  <hr>  
+  <div align="right">
+    <a href="set.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="map.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+
+
+<h2 align="left">
+    Class template <code>multiset</code>
+</h2>
+
+    <p>
+    <code>class std_ext_adv::multiset</code> in the file "bpt_set.hpp".  
+    <p>
+
+    <p>
+    The class <code>multiset</code> supports the interface of 
+    the C++03 <code>std::multiset</code> container. 
+    A <code>multiset</code> is a container adapter, its behaviour 
+    is defined by an underlying container based on a B+ tree. 
+    A <code>multiset</code> is an associative container that stores 
+    elements with multiple equivalent keys. 
+    A <code>multiset</code> supports: 
+    </p>
+    <ul>
+    <li>logarithmic time search operations using keys of the container elements. 
+    <li>random access iterators. 
+    <li>logarithmic time insert and erase operations for a single element anywhere within the container. 
+    <li>logarithmic time split operations for any ranges of consecutive elements and any positions in the containers involved. 
+    </ul>
+
+
+<h3 class="h3_f1">
+    Synopsis
+</h3>
+
+<pre class="pre_f1_border"> 
+
+ template
+ &lt;
+     class _K  ,
+     class _Pr = std::less&lt;_K&gt;      ,
+     class _A  = std::allocator&lt;_K&gt; ,
+     class _BPTree = bp_tree_array 
+ &gt;
+ class multiset
+ {
+ public:
+ 
+     //  types    
+     typedef multiset&lt;_K, _Pr, _A, _BPTree&gt;              this_type       ;
+     typedef _K                                          key_type        ;     
+     typedef _K                                          value_type      ;
+     typedef _Pr                                         key_compare     ;     
+     typedef _Pr                                         value_compare   ;
+     typedef _A                                          allocator_type  ;
+     typedef typename allocator_type::reference          reference       ;
+     typedef typename allocator_type::const_reference    const_reference ;
+     typedef typename _BPTree::iterator                  iterator        ;
+     typedef typename _BPTree::const_iterator            const_iterator  ;
+     typedef typename allocator_type::size_type          size_type       ;
+     typedef typename allocator_type::difference_type    difference_type ;
+     typedef typename allocator_type::pointer            pointer         ;
+     typedef typename allocator_type::const_pointer      const_pointer   ;
+     typedef std::reverse_iterator&lt; iterator &gt;           reverse_iterator;
+     typedef std::reverse_iterator&lt; const_iterator &gt;     const_reverse_iterator;
+
+     //  constructors, copy and assignment
+     explicit 
+     multiset ( const key_compare &    pred=key_compare()    ,
+                const allocator_type & alr =allocator_type() ) ;
+
+     template &lt;class _InpIter&gt;
+     multiset ( _InpIter               pos_a ,
+                _InpIter               pos_b ,
+                const key_compare &    pred=key_compare()    ,
+                const allocator_type & alr =allocator_type() ) ; 
+
+     multiset ( const this_type &  that ) ;
+     
+     this_type &
+     operator = ( const this_type &  that ) ; 
+     
+     allocator_type  get_allocator ( ) const ;
+
+     //  iterators
+     iterator                begin ( ) ;     
+     const_iterator          begin ( ) const ;
+     iterator                end   ( ) ;
+     const_iterator          end   ( ) const ; 
+     reverse_iterator        rbegin( ) ;
+     const_reverse_iterator  rbegin( ) const ; 
+     reverse_iterator        rend  ( ) ;      
+     const_reverse_iterator  rend  ( ) const ;
+ 
+     //  capacity 
+     bool       empty    ( ) const ;     
+     size_type  size     ( ) const ;
+     size_type  max_size ( ) const ;
+
+     //  modifiers 
+     iterator  insert ( const value_type &  x ) ; 
+     iterator  insert ( iterator  pos , const value_type &  x ) ; 
+     template &lt;class _InpIter&gt;
+     void      insert ( _InpIter  pos_a , _InpIter  pos_b ) ; 
+
+     iterator  erase ( iterator     pos ) ;
+     size_type erase ( const key_type &  k ) ;
+     iterator  erase ( iterator     pos_a ,
+                       iterator     pos_b ) ;
+
+     iterator  split ( iterator     pos   ,
+                       this_type &  that  ) ;
+     iterator  split ( iterator     pos_a ,
+                       iterator     pos_b ,
+                       this_type &  that  ) ;
+
+     void      merge ( this_type &  that  ) ;
+
+     void      swap  ( this_type &  x ) ;     
+     void      clear ( ) ;                   
+     
+     std::pair&lt;iterator, bool&gt;
+               write ( iterator  pos, const value_type &  val_new ) ; 
+
+     //  multiset observers 
+     key_compare     key_comp   ( ) const ; 
+     value_compare   value_comp ( ) const ; 
+
+     //  multiset operations 
+     iterator        find  ( const key_type &  k ) ; 
+     const_iterator  find  ( const key_type &  k ) const ; 
+     size_type       count ( const key_type &  k ) const ;
+     
+     iterator        lower_bound ( const key_type &  k ) ;
+     const_iterator  lower_bound ( const key_type &  k ) const ; 
+     iterator        upper_bound ( const key_type &  k ) ; 
+     const_iterator  upper_bound ( const key_type &  k ) const ; 
+     
+     std::pair&lt;iterator, iterator&gt;
+                     equal_range ( const key_type &  k ) ; 
+     std::pair&lt;const_iterator, const_iterator&gt; 
+                     equal_range ( const key_type &  k ) const ; 
+
+     //  specialized algorithms
+     value_type  accumulate ( const_iterator  pos_a  ,
+                              const_iterator  pos_b  ,
+                              value_type      val_in ) const ;
+
+ } ; 
+ 
+
+ //  comparisons 
+ template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+ bool operator == ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                    const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+
+ template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+ bool operator != ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                    const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+
+ template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+ bool operator &lt;  ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                    const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+
+ template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+ bool operator &gt;  ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                    const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+
+ template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+ bool operator &lt;= ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                    const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ;
+
+ template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+ bool operator &gt;= ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                    const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+
+ //  specialized algorithms 
+ template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+ void swap ( multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x , 
+             multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+
+</pre> 
+
+
+<h3 class="h3_f1">
+    Description
+</h3>
+
+<h4 class="h4_f1">
+    <code>multiset </code> template parameters
+</h4>
+<br>
+
+  <table class="tbl_f1">
+    <tr>
+        <td class="td_f1"><b>Parameter</b></td>  <td class="td_f1"><b>Description</b></td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>_K</code></td>  
+        <td class="td_f1">
+            the value type of a container element;
+            the type must be <code>DefaultConstructible</code>, 
+            <code>CopyConstructible</code>, <code>Assignable</code>
+            and no-throw <code>Destructible</code>; 
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>_Pr</code></td>
+        <td class="td_f1">
+            the function object type; 
+            the function implements a strict weak ordering on the values of the container elements; 
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>_A</code></td>  
+        <td class="td_f1">
+            the allocator type responsible for all internal container memory management; 
+            the type must meet the <code>std::allocator</code> requirements; 
+            the allocator's value type is the same as the container's value type;             
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>_BPTree</code></td>  
+        <td class="td_f1">
+            the type of an underlying container; 
+            <code>bp_tree_array</code> and <code>bp_tree_array_acc</code> 
+            can be used to instantiate <code>multiset</code>;
+        </td>    
+    </tr>
+  </table>
+
+
+<h4 class="h4_f1">
+    <code>multiset </code> types
+</h4>
+<br>
+
+  <table class="tbl_f1">
+    <tr>
+        <td class="td_f1"><b>Type</b></td>  <td class="td_f1"><b>Description</b></td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>value_type</code></td>  
+        <td class="td_f1">
+            the type of a container element;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>key_type</code></td>  
+        <td class="td_f1">
+            the type of the key value of a container element; 
+            <code>key_type</code> is the same type as <code>value_type</code>;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>key_compare</code></td>  
+        <td class="td_f1">
+            the function object type;
+            the function represents an ordering relation on
+            the container elements induced by their keys; 
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>value_compare</code></td>  
+        <td class="td_f1">
+            the function object type;
+            the function represents an ordering relation on
+            the container elements induced by their keys; 
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>reference</code></td>  
+        <td class="td_f1">
+            the reference to a container element;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>const_reference</code></td>  
+        <td class="td_f1">
+            the constant reference to a container element;
+        </td>    
+    </tr>
+    
+    <tr>
+        <td class="td_f1"><code>pointer</code></td>  
+        <td class="td_f1">
+            the pointer to a container element;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>const_pointer</code></td>  
+        <td class="td_f1">
+            the constant pointer to a container element;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>size_type</code></td>  
+        <td class="td_f1">
+            the unsigned integral type;
+            the type to represent the number of container elements,
+            the non-negative index to a container element 
+            and the position of an iterator; 
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>difference_type</code></td>  
+        <td class="td_f1">
+            the signed integral type;
+            the type of a signed distance between two iterators; 
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>iterator</code></td>  
+        <td class="td_f1">
+            the random access iterator to iterate through the container;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>const_iterator</code></td>  
+        <td class="td_f1">
+            the constant random access iterator to iterate through the container;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>reverse_iterator</code></td>  
+        <td class="td_f1">
+            the random access iterator to iterate through the container in reverse order;
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_f1"><code>const_reverse_iterator</code></td>  
+        <td class="td_f1">
+            the constant random access iterator to iterate through the container in reverse order;
+        </td>    
+    </tr>
+  </table>
+<br>
+
+    <p class="p_f1"> 
+    In the following sections <code>T</code> represents the type of a container element <code>value_type</code>. 
+    </p>
+
+
+
+<h4 class="h4_f1">
+    <code>multiset </code> constructors, copy, assignment and destructor 
+</h4>
+
+
+<pre class="pre_f1">
+explicit 
+multiset ( const key_compare &    pred=key_compare()    ,
+           const allocator_type & alr =allocator_type() ) ;
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    constructs an empty container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    an exception thrown by allocator 
+    when the required storage cannot be obtained. 
+    </p>
+    
+
+<pre class="pre_f1">
+template &lt;class _InpIter&gt;
+multiset ( _InpIter               pos_a ,
+           _InpIter               pos_b ,
+           const key_compare &    pred=key_compare()    ,
+           const allocator_type & alr =allocator_type() ) ; 
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    constructs the container with copies of elements 
+    in the range <code>[ pos_a, pos_b )</code>. 
+    </p> 
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(N log N)</i>, 
+    where <i>N</i><code>=std::distance(pos_a, pos_b)</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+multiset ( const multiset &  that ) ;
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::_BPTree( const _BPTree &  that )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+multiset &
+operator = ( const multiset &  that ) ;
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::operator=( const _BPTree &  that )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+allocator_type  get_allocator ( ) const;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    a copy of the allocator used to construct the container.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>multiset </code> iterators
+</h4>
+
+
+<pre class="pre_f1">
+iterator        begin ( ) ;
+const_iterator  begin ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    an iterator pointing to the first element in the container.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<pre class="pre_f1">
+iterator        end ( ) ;
+const_iterator  end ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    an iterator which is the past-the-end value for the container.    
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<pre class="pre_f1">
+reverse_iterator        rbegin( ) ;
+const_reverse_iterator  rbegin( ) const ; 
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    a reverse iterator pointing to the same position 
+    as pointed to by <code>end()</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+     
+
+<pre class="pre_f1">
+reverse_iterator        rend  ( ) ;      
+const_reverse_iterator  rend  ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    a reverse iterator pointing to the same position 
+    as pointed to by <code>begin()</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+
+<h4 class="h4_f1">
+    <code>multiset </code> capacity 
+</h4>
+
+
+<pre class="pre_f1">
+bool  empty ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    <code>true</code> if the number of elements in the container is 0, 
+    else returns <code>false</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<pre class="pre_f1">
+size_type  size ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the total number of elements in the container.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<pre class="pre_f1">
+size_type  max_size ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the number of elements in the largest possible container.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>multiset </code> modifiers 
+</h4>
+
+
+<pre class="pre_f1">
+iterator  insert ( const value_type &  x ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::insert( const value_type &  x )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+iterator  insert ( iterator  pos , const value_type &  x ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::insert( iterator  pos, const value_type &  x )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+template &lt;class _InpIter&gt;
+void  insert ( _InpIter  pos_a , _InpIter  pos_b ) ; 
+</pre>
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::insert_set( _InpIter  pos_a, _InpIter  pos_b )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+iterator  erase ( iterator  pos ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::erase( iterator  pos )</code>. 
+    </p>
+
+    
+<pre class="pre_f1">
+size_type  erase ( const key_type &  k ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::erase( const key_type &  k )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+iterator  erase ( iterator  pos_a ,
+                  iterator  pos_b ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::erase( iterator  pos_a, iterator  pos_b )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  merge ( this_type &  that ) ;
+</pre> 
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::merge ( _BPTree &  that, _Pred  pred )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+void  swap ( bp_tree_array &  x ) ;    
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    <code>a.swap(b)</code> exchanges elements of <code>a</code> and <code>b</code>.     
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<pre class="pre_f1">
+void  clear ( ) ;     
+</pre>
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::clear( )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+std::pair&lt;iterator, bool&gt;
+write ( iterator  pos, const value_type &  val_new ) ; 
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>pos</code> is a valid dereferenceable iterator of the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the <code>bool</code> component of returned pair indicates 
+    whether the container has been modified and the <code>iterator</code> 
+    component of the pair points to the element with key 
+    equivalent to the key of <code>val_new</code>.     
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    if <code>pos</code> does not point to an element with key     
+    equivalent to the key of <code>val_new</code> 
+    <br>
+<pre>
+        pos_res = erase  ( pos ) ;
+        pos_res = insert ( pos_res , val_new ) ;
+</pre>
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>multiset </code> observers 
+</h4>
+
+<pre class="pre_f1">
+key_compare  key_comp ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the <code>key_compare</code> object used by the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+<pre class="pre_f1">
+value_compare  value_comp ( ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the <code>value_compare</code> object used by the container. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(1)</i>.
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>multiset </code> operations 
+</h4>
+
+
+<pre class="pre_f1">
+iterator        find ( const key_type &  k ) ;
+const_iterator  find ( const key_type &  k ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    an iterator pointing to an element with the key equivalent to 
+    <code>k</code>, or <code>end()</code> if such an element is not found.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+
+  
+<pre class="pre_f1">
+size_type  count ( const key_type &  k ) const ;    
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the number of elements with key equivalent to <code>k</code>.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.
+    </p>
+
+
+<pre class="pre_f1">
+iterator        lower_bound ( const key_type &  k ) ;
+const_iterator  lower_bound ( const key_type &  k ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    an iterator pointing to the first element with key not less than
+    <code>k</code>, or <code>end()</code> if such an element is not found.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.    
+    </p>
+
+
+<pre class="pre_f1">
+iterator        upper_bound ( const key_type &  k ) ;
+const_iterator  upper_bound ( const key_type &  k ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    an iterator pointing to the first element with key greater than 
+    <code>k</code>, or <code>end()</code> if such an element is not found.
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.    
+    </p>
+
+
+<pre class="pre_f1">
+std::pair&lt;iterator, iterator&gt;              
+                equal_range ( const key_type &  k ) ;
+std::pair&lt;const_iterator, const_iterator&gt;  
+                equal_range ( const key_type &  k ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    <code>std::pair( lower_bound(k) , upper_bound(k) )</code> .
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where <i>N</i><code>=size()</code>.    
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>multiset </code> specialized algorithms  
+</h4>
+
+<pre class="pre_f1">
+mapped_type  accumulate ( const_iterator  pos_a  ,
+                          const_iterator  pos_b  ,
+                          mapped_type     val_in ) const ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::accumulate( )</code>. 
+    </p>
+
+
+ 
+<h4 class="h4_f1">
+    <code>multiset </code> comparisons
+</h4>
+  
+ 
+<pre class="pre_f1">
+template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+bool operator == ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                   const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the result of 
+    <code>x.size()==y.size() && std::equal(x.begin(), x.end(), y.begin())</code>.     
+    </p>
+                    
+                    
+<pre class="pre_f1">
+template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+bool operator != ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                   const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the result of
+    <code>!( x == y )</code>.
+    </p>
+                    
+
+<pre class="pre_f1">
+template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+bool operator &lt;  ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                   const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the result of 
+    <code>std::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end())</code>.
+    </p>
+
+
+<pre class="pre_f1">
+template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+bool operator &gt;  ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                   const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the result of
+    <code>( y &lt; x )</code>.        
+    </p>
+                    
+                    
+<pre class="pre_f1">
+template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+bool operator &lt;= ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                   const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the result of
+    <code>!( y &lt; x )</code>.
+    </p>
+                    
+
+<pre class="pre_f1">
+template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+bool operator &gt;= ( const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
+                   const multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+</pre>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the result of
+    <code>!( x &lt; y )</code>.    
+    </p>
+
+
+<h4 class="h4_f1">
+    <code>multiset </code> specialized algorithms  
+</h4>
+
+ 
+<pre class="pre_f1">
+template &lt;class _K, class _Pr, class _A, class _BPTree&gt;
+void swap ( multiset&lt; _K, _Pr, _A, _BPTree&gt; &  x , 
+            multiset&lt; _K, _Pr, _A, _BPTree&gt; &  y ) ; 
+</pre>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    <code>x.swap( y )</code>.
+    </p>
+
+
+<br>
+<br>
+
+
+  <hr>
+
+  <p><a href="http://validator.w3.org/check?uri=referer"><img border="0" src=
+  "images/valid-html401.png" alt="Valid HTML 4.01 Transitional"
+  height="31" width="88"></a></p>
+
+  <p>Revised 
+  <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
+  22 September, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+
+  <p><i>Copyright &copy; 2012</i> 
+  <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>
+  </p>
+
+  <p><i>Distributed under the Boost Software License, Version 1.0. (See
+  accompanying file <a href="images/LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+  copy at <a href=
+  "http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)</i></p>
+
+
+  <hr>  
+  <div align="right">
+    <a href="set.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="map.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+
+
+</body
+</html>

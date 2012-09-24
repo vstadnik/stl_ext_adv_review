@@ -1,0 +1,624 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <link rel="stylesheet" type="text/css" href="../../../boost.css">
+  <link rel="stylesheet" type="text/css" href="images/bpt_styles.css">  
+
+  <title>introduction</title>
+</head>
+
+<body link="#0000FF" vlink="#800080">
+  <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+  "header">
+    <tr>
+      <td valign="top" width="300">
+        <h3><a href="../../../index.htm"><img height="86" width="277" alt=
+        "C++ Boost" src="images/boost.png" border="0"></a></h3>
+      </td>
+    </tr>
+  </table>
+  
+
+  <hr>  
+  <div align="right">
+    <a href="../index.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="examples.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+
+
+<h2 align="left">
+    Introduction
+</h2>
+    
+
+<div class="div_f1_frame"> 
+  <dl>
+    <dd class="dd_f1"><a class="link_under" href="#motivn">Motivation</a></dd>
+    <dd class="dd_f1"><a class="link_under" href="#overvw">Overview of namespace <code>std_ext_adv</code></a></dd>
+    <dd class="dd_f1"><a class="link_under" href="#complx">Comparison of computational complexity</a></dd>
+    <dd class="dd_f1"><a class="link_under" href="#perfnt">Performance notes</a></dd>
+  </dl>
+</div>
+<br>
+
+
+    <a name="motivn"></a>
+    <h4 class="h4_f1">
+    Motivation
+    </h4>
+
+    <p>
+    The C++ standard library [<a href="bibliography.html">1</a>] has proven 
+    to be very effective in the development of various programming solutions. 
+    The success of this library is due to its solid theoretical framework and 
+    high quality of its design and implementations. 
+    Despite all of these well known advantages, 
+    the library has a number of limitations associated with 
+    the efficiency of the container algorithms and bidirectional iterators. 
+    </p> 
+
+    <p>
+    The C++ standard library increases its usefulness by providing various 
+    types of specialized containers [<a href="bibliography.html">1</a>]. 
+    In particular, it includes three sequences: <code>vector</code>, 
+    <code>deque</code> and <code>list</code>. 
+    Each of these sequences has a limited application area due to having 
+    at least one inefficient operation with linear running time. 
+    For <code>vector</code> and <code>deque</code>, these are the member functions 
+    <code>insert()</code> and <code>erase()</code> for a single element. 
+    <code>list</code> supports bidirectional iterators, which are inefficient 
+    in algorithms that access elements at random or distant positions. 
+    Associative containers provide efficient access to elements by their keys, 
+    however, access to elements by their positions 
+    is even less efficient than in <code>list</code>. 
+    Many algorithms of associative containers based on 
+    dynamically allocated red black trees are outperformed by 
+    the same algorithms using array based data structures. 
+    </p>
+    
+    <p>
+    The efficient support of move semantics by the containers of the C++03 
+    standard library is reduced to the member function <code>swap()</code>. 
+    The container <code>std::list</code> provides three member 
+    functions <code>splice()</code> that belong to the same group 
+    of the move semantics functions as the function <code>swap()</code>. 
+    The complexity of these functions is constant in two special cases, 
+    however, in the general case the function <code>splice()</code> 
+    has linear complexity. 
+    </p>
+
+    <p>
+    The advanced data structures can help solve these problems and 
+    extend the STL facilities through new efficient algorithms. 
+    These data structures have a great potential in achieving 
+    high levels of performance and generalization of algorithms 
+    for a wide range of applications. 
+    </p> 
+        
+    <a name="overvw"></a>
+    <h4 class="h4_f1">
+    Overview of namespace <code>std_ext_adv</code> 
+    </h4>
+
+    <p>    
+    The C++ standard library specifies the interfaces of the container and 
+    iterator types and allows various implementation alternatives 
+    using the most efficient data structures and suitable design patterns. 
+    The class of advanced data structures is much wider than the class of 
+    linear data structures and basic search trees used to formulate 
+    the requirements for the C++ standard containers and iterators. 
+    The augmented B+ and red black trees appear to be particularly 
+    attractive for the extension of the STL facilities. 
+    These data structures can be used to develop general and 
+    specialized containers with random and bidirectional iterators 
+    as well as to improve the performance of specific algorithms. 
+    One advanced data structure can support a number of interfaces of 
+    the C++ standard containers and can add new efficient extensions. 
+    For these reasons, all the classes of STL containers 
+    of the namespace <code>std_ext_adv</code> are container 
+    adapters with the behaviour and performance guarantees 
+    defined by the underlying containers. Most of the member 
+    functions of a container adapter simply call the corresponding 
+    member functions of an underlying container. 
+    </p> 
+
+    <p>
+    The namespace <code>std_ext_adv</code> offers five class templates 
+    that support interfaces of the C++03 standard containers:     
+    </p>    
+<pre>
+    sequence , 
+    map      , 
+    multimap , 
+    set      , 
+    multiset ;
+</pre>
+    <p>
+    The class <code>sequence</code> defines a union of interfaces of three 
+    STL containers: <code>vector</code>, <code>list</code> and <code>deque</code>. 
+    All other classes implement interfaces of the matching C++03 standard 
+    associative containers. 
+    </p>
+    
+    <p>
+    In the current version of the namespace <code>std_ext_adv</code> 
+    the advanced data structures supporting 
+    the interfaces of the C++03 standard containers 
+    are represented by two augmented array based B+ trees. 
+    In a class of a container adapter a template-argument 
+    for a template-parameter of a basic container 
+    type can be one of the following classes:
+    </p>
+<pre>
+    bp_tree_array     , 
+    bp_tree_array_acc ; 
+</pre>
+
+    <p>
+    Every of these two classes can be used to generate an STL 
+    container class from any sequence and associative container adapter. 
+    Thus, the current version of the namespace <code>std_ext_adv</code> 
+    can be used to instantiate 10 classes of STL containers. 
+    The previously developed 
+    <a href="https://github.com/vstadnik/stl_ext_adv">dynamically allocated B+ trees</a> 
+    have been excluded, because they are less efficient than 
+    the array based B+ trees. With those classes of basic containers 
+    the total number of STL containers would be 24. 
+    These B+ trees can be added in the future. 
+    </p>
+
+    <h4>
+    Class <code>bp_tree_array</code>
+    </h4>
+
+    <p>
+    The class <code>bp_tree_array</code> implements a general purpose 
+    array based sequence. For a wide range of applications 
+    this class represents the default basic container of 
+    the namespace <code>std_ext_adv</code>. Any STL container 
+    adapter using the class <code>bp_tree_array</code> 
+    obtains random access iterators and many efficient 
+    member functions with logarithmic complexity. 
+    The B+ tree of the class <code>bp_tree_array</code> can 
+    store elements with multiple or unique keys in the order 
+    specified by a comparison object. Thus, associative 
+    containers using the class <code>bp_tree_array</code>    
+    can take advantage of the efficient algorithms developed 
+    for sequences and random access iterators. 
+    </p>    
+
+   
+    <h4>
+    Container <code>sequence</code>
+    </h4>
+
+    <p>
+    The class <code>std_ext_adv::sequence</code> 
+    supports the union of interfaces of 
+    the C++03 sequence containers: <code>std::list</code>, 
+    <code>std::deque</code> and <code>std::vector</code>. 
+    This new container can replace in algorithms 
+    any of these standard containers. 
+    A <code>sequence</code> supports:
+    </p>
+    <ul>
+    <li>random access iterators. 
+    <li>logarithmic time insert and erase operations for a single element anywhere within the container. 
+    <li>logarithmic time splice and split operations for any ranges of consecutive elements and any positions in the containers involved. 
+    </ul>
+
+    
+    <h4>
+    Associative containers
+    </h4>
+    
+    <p>
+    All the associative containers of the 
+    namespace <code>std_ext_adv</code> provide  
+    equally efficient access to elements by their keys 
+    and by positions. These containers support: 
+    </p>
+    <ul>
+    <li>logarithmic time search operations using keys of the container elements. 
+    <li>random access iterators. 
+    <li>logarithmic time insert and erase operations for a single element anywhere within the container. 
+    <li>logarithmic time split operations for any ranges of consecutive elements and any positions in the containers involved. 
+    </ul>
+    
+    
+    <h4>
+    Move semantics
+    </h4>    
+    <p>
+    The key feature of the move semantics functions of sequences is that 
+    they do not change the total number of elements in the containers involved. 
+    The group of these functions in the C++03 is represented by the 
+    <code>swap()</code> and <code>splice()</code> functions, 
+    see the proposal to add move semantics 
+    <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2002/n1377.htm">N1377</a>. 
+    The latter function is supported by <code>std::list</code> only 
+    and has linear complexity for an arbitrary range of elements. 
+    The sequences of the namespace <code>std_ext_adv</code> extend 
+    move semantics of the standard containers by providing 
+    the member functions <code>splice()</code> and <code>split()</code> 
+    that guarantee logarithmic complexity in the worst case. 
+    </p>        
+    <p>
+    All the associative containers of the namespace <code>std_ext_adv</code> 
+    support the member function <code>split()</code> in the same way as 
+    sequences. However, instead of the function <code>splice()</code>, 
+    these containers provide the member function <code>merge()</code>. 
+    For associative containers with multiple equivalent elements this 
+    function has the same effect as the function <code>splice()</code>. 
+    For associative containers that store unique elements the function 
+    <code>merge()</code> has the effect of the union operation. 
+    In the special cases that are implemented through the function 
+    <code>splice()</code> the complexity of the function <code>merge</code> 
+    is logarithmic. 
+    </p>        
+
+
+    <h4>
+    Efficient algorithm <code>accumulate()</code>
+    </h4>
+    <p>
+    The class <code>bp_tree_array_acc</code> adds to 
+    the functionality of the class <code>bp_tree_array</code> 
+    the efficient algorithm for the member function 
+    <code>accumulate()</code>. The function calculates the sum of 
+    the values of consecutive container elements using 
+    <i>O(log N)</i> operations in the worst case, 
+    where <i>N</i> is the number of the consecutive elements. 
+    The function can be used through every STL container adapter.         
+    This algorithm is fundamental to many practically important 
+    applications, such as the numerical integration, the data 
+    analysis, the statistics etc., see the section 
+    <a href="examples.html">Examples</a> for more details. 
+    </p>
+
+
+    <h4>
+    Advantage of pointer arithmetic
+    </h4>
+    <p>
+    An array based B+ tree of the namespace <code>std_ext_adv</code> 
+    implements a partition of an array into a list of sub-arrays 
+    connected to a B-tree. In some aspects, the tree represents 
+    an enhanced pool allocator. Compared to 
+    <a href="https://github.com/vstadnik/stl_ext_adv">dynamically allocated B+ trees</a>,  
+    the array based B+ trees require less space, 
+    improve locality of reference and 
+    offer much more efficient access to data. 
+    They support many algorithms with the level of performance 
+    close to other array based containers, 
+    such as <code>std::vector</code>. 
+    Many of the proposed STL extensions with a bit different 
+    performance guarantees can be achieved using the augmented 
+    red black trees. However, these data structures have 
+    a major limitation of not being able to take advantage of 
+    the pointer arithmetic. 
+    </p>
+    
+        
+    <h4>
+    Improved representation of sequences
+    </h4>
+
+    <p>
+    The fact that one basic container of the namespace 
+    <code>std_ext_adv</code> supports all the types of 
+    the C++03 sequences and associative containers shows 
+    the potential of the advanced data structures. 
+    These B+ trees  provide more consistent interfaces of 
+    the sequences and associative containers and improve 
+    the representation of a mathematical sequence. 
+    Note that in the C++ standard library even sequences are not 
+    completely interchangeable, since there are differences 
+    in the interfaces of these containers due to inefficiencies 
+    of some basic operations. 
+    </p>
+
+
+    <h4>
+    Extension of STL application area
+    </h4>
+    
+    <p>
+    The increase in the number of containers supporting STL 
+    interfaces with new efficient algorithms is an important factor 
+    for the extension of the application area of the C++ standard library. 
+    The new containers supersede the specialized STL containers, 
+    first of all sequences, with reduced interfaces, less efficient 
+    member functions and bidirectional iterators. 
+    Thus, they can improve the performance of existing  
+    algorithms using the standard containers with at least one 
+    relatively inefficient operation. 
+    </p>
+
+    <p>    
+    The wide set of the efficient member functions offered by 
+    the new containers makes them particularly beneficial 
+    for algorithms that use various operations of sequential and 
+    random access and frequently update data stored in a container.
+    In the general case, the wider the set of operations 
+    required in a user algorithm the more significant 
+    should be the performance gain provided by 
+    the new containers against the C++ standard containers. 
+    The algorithms that use a small set of container operations 
+    will benefit from the specialized containers, such as 
+    <code>std::vector</code>, that offer the most efficient 
+    member functions and iterators for specific applications. 
+    </p>
+
+  
+    <a name="complx"></a>          
+    <h4 class="h4_f1">
+    Comparison of computational complexity
+    </h4>
+
+    <p>
+    In the following tables 
+    <code>a, b</code> denote container objects, 
+    <code>p, i, i1, i2</code> denote iterators, 
+    <code>x</code> denotes a value of <code>value_type</code> of a container element, 
+    <code>n</code> denotes a value of an integer type,
+    <i>N</i><code>=size()</code>, 
+    <i>D</i><code>=std::distance(i1,i2)</code>, 
+    <i>K</i><code>=count(x)</code>, 
+    <code>sequence_acc</code> and <code>multiset_acc</code> denote 
+    containers using the class <code>bp_tree_array_acc</code>.
+    </p>
+
+  <table class="tbl_f1">
+    <tr>
+        <td class="td_f2">function</td> 
+        <td class="td_cpp">std::vector</td> 
+        <td class="td_cpp">std::list</td>         
+        <td class="td_cpp">sequence</td> 
+        <td class="td_cpp">sequence_acc</td>
+    </tr>
+    <tr>
+        <td class="td_cpp">a.insert(p,x)</td>    
+        <td class="td_f2"><i>O(N)</i></td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.erase(p)</td>    
+        <td class="td_f2"><i>O(N)</i></td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.push_back(x)</td>    
+        <td class="td_f2"><i>O(1)</i> amortized</td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.pop_back()</td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.clear()</td>    
+        <td class="td_f2"><i>O(N)</i></td>    
+        <td class="td_f2"><i>O(N)</i></td>    
+        <td class="td_f2"><i>O(N)</i></td>    
+        <td class="td_f2"><i>O(N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.at(n)</td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>-</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">std::distance(i1,i2)</td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>O(D)</i></td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">std::advance(i,n)</td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>O(n)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.accumulate(i1,i2,x)</td>    
+        <td class="td_f2"><i>O(D)</i></td>    
+        <td class="td_f2"><i>O(D)</i></td>    
+        <td class="td_f2"><i>O(D)</i></td>    
+        <td class="td_f2"><i>O(log D)</i></td>    
+        
+    </tr>
+    <tr>
+        <td class="td_cpp">a.splice(p,b)</td>    
+        <td class="td_f2">-</td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.splice(p,b,i)</td>    
+        <td class="td_f2">-</td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.splice(p,b,i1,i2)</td>    
+        <td class="td_f2">-</td>    
+        <td class="td_f2"><i>O(D)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.split(b,i)</td>    
+        <td class="td_f2">-</td>    
+        <td class="td_f2">-</td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.split(b,i1,i2)</td>    
+        <td class="td_f2">-</td>    
+        <td class="td_f2">-</td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+  </table>
+<br>
+
+
+  <table class="tbl_f1">
+    <tr>
+        <td class="td_f2">function</td> 
+        <td class="td_cpp">std::multiset</td> 
+        <td class="td_cpp">multiset</td> 
+        <td class="td_cpp">multiset_acc</td>
+    </tr>
+    <tr>
+        <td class="td_cpp">a.insert(x)</td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.erase(p)</td>    
+        <td class="td_f2"><i>O(1)</i> amortized</td> 
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.clear()</td>    
+        <td class="td_f2"><i>O(N)</i></td>    
+        <td class="td_f2"><i>O(N)</i></td>    
+        <td class="td_f2"><i>O(N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.lower_bound(x)</td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.count(x)</td>    
+        <td class="td_f2"><i>O(K + log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">std::distance(i1,i2)</td>    
+        <td class="td_f2"><i>O(D)</i></td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+        <td class="td_f2"><i>O(1)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">std::advance(i,n)</td>    
+        <td class="td_f2"><i>O(n)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.accumulate(i1,i2,x)</td>    
+        <td class="td_f2"><i>O(D)</i></td>    
+        <td class="td_f2"><i>O(D)</i></td>    
+        <td class="td_f2"><i>O(log D)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.merge(b)</td>    
+        <td class="td_f2">-</td>    
+        <td class="td_f2"><i>O(log N) - O(N log N)</i></td>    
+        <td class="td_f2"><i>O(log N) - O(N log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.split(b,i)</td>    
+        <td class="td_f2">-</td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+    <tr>
+        <td class="td_cpp">a.split(b,i1,i2)</td>    
+        <td class="td_f2">-</td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+        <td class="td_f2"><i>O(log N)</i></td>    
+    </tr>
+  </table>
+<br>
+
+
+    <a name="perfnt"></a>
+    <h4 class="h4_f1">
+    Performance notes 
+    </h4>
+
+    <p>
+    Access to a single element of a <code>sequence</code> through 
+    the subscript <code>operator[ ]</code> or the member function 
+    <code>at()</code> has cost <i>O(log N)</i> in the worst case, 
+    where <i>N</i> is the container size. Thus, the total cost of 
+    sequential processing of all the <code>sequence</code> elements 
+    through this operator and member function can reach <i>O(N log N)</i>. 
+    For the best performance of sequential processing that guarantees 
+    cost <i>O(N)</i> algorithms should access elements through an iterator. 
+    This method also offers the advantage of being generic, 
+    since it can be used not only with a <code>sequence</code>, 
+    but also with the associative containers.
+    </p>
+    
+    <p>
+    In addition to this, in algorithms that visit distant elements 
+    the random access iterators of the array based B+ trees 
+    are less efficient than iterators of <code>std::vector</code>. 
+    The operators <code>{+=, -=, +, -}</code>, which change 
+    the position of a random access iterator of a B+ tree, 
+    in the worst case have computational cost <i>O(log N)</i>. 
+    </p>
+    
+
+  <hr>
+
+  <p><a href="http://validator.w3.org/check?uri=referer"><img border="0" src=
+  "images/valid-html401.png" alt="Valid HTML 4.01 Transitional"
+  height="31" width="88"></a></p>
+
+  <p>Revised 
+  <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
+  22 September, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+
+  <p><i>Copyright &copy; 2012</i> 
+  <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>
+  </p>
+
+  <p><i>Distributed under the Boost Software License, Version 1.0. (See
+  accompanying file <a href="images/LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+  copy at <a href=
+  "http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)</i></p>
+    
+
+  <hr>  
+  <div align="right">
+    <a href="../index.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="examples.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+
+
+</body
+</html>
