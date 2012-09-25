@@ -58,8 +58,8 @@
     The success of this library is due to its solid theoretical framework and 
     high quality of its design and implementations. 
     Despite all of these well known advantages, 
-    the library has a number of limitations associated with 
-    the efficiency of the container algorithms and bidirectional iterators. 
+    the library has a number of efficiency limitations associated with 
+    the container algorithms and bidirectional iterators. 
     </p> 
 
     <p>
@@ -139,16 +139,15 @@
     multiset ;
 </pre>
     <p>
-    The class <code>sequence</code> defines a union of interfaces of three 
-    STL containers: <code>vector</code>, <code>list</code> and <code>deque</code>. 
-    All other classes implement interfaces of the matching C++03 standard 
-    associative containers. 
+    The class <code>sequence</code> defines a union of interfaces of the 
+    standard sequences. All other classes implement interfaces of the matching 
+    standard associative containers. 
     </p>
     
     <p>
     In the current version of the namespace <code>std_ext_adv</code> 
-    the advanced data structures supporting 
-    the interfaces of the C++03 standard containers 
+    the advanced data structures supporting the interfaces of 
+    the C++03 standard containers and extensions 
     are represented by two augmented array based B+ trees. 
     In a class of a container adapter a template-argument 
     for a template-parameter of a basic container 
@@ -182,8 +181,9 @@
     this class represents the default basic container of 
     the namespace <code>std_ext_adv</code>. Any STL container 
     adapter using the class <code>bp_tree_array</code> 
-    obtains random access iterators and many efficient 
-    member functions with logarithmic complexity. 
+    obtains random access iterators and a number of 
+    member functions with the improved efficiency 
+    against standard containers. 
     The B+ tree of the class <code>bp_tree_array</code> can 
     store elements with multiple or unique keys in the order 
     specified by a comparison object. Thus, associative 
@@ -227,7 +227,7 @@
     <li>logarithmic time search operations using keys of the container elements. 
     <li>random access iterators. 
     <li>logarithmic time insert and erase operations for a single element anywhere within the container. 
-    <li>logarithmic time split operations for any ranges of consecutive elements and any positions in the containers involved. 
+    <li>logarithmic time split operations in the general case and logarithmic time merge operations in special cases. 
     </ul>
     
     
@@ -258,7 +258,7 @@
     For associative containers that store unique elements the function 
     <code>merge()</code> has the effect of the union operation. 
     In the special cases that are implemented through the function 
-    <code>splice()</code> the complexity of the function <code>merge</code> 
+    <code>splice()</code> the complexity of the function <code>merge()</code> 
     is logarithmic. 
     </p>        
 
@@ -468,14 +468,14 @@
         <td class="td_f2"><i>O(log N)</i></td>    
     </tr>
     <tr>
-        <td class="td_cpp">a.split(b,i)</td>    
+        <td class="td_cpp">a.split(i,b)</td>    
         <td class="td_f2">-</td>    
         <td class="td_f2">-</td>    
         <td class="td_f2"><i>O(log N)</i></td>    
         <td class="td_f2"><i>O(log N)</i></td>    
     </tr>
     <tr>
-        <td class="td_cpp">a.split(b,i1,i2)</td>    
+        <td class="td_cpp">a.split(i1,i2,b)</td>    
         <td class="td_f2">-</td>    
         <td class="td_f2">-</td>    
         <td class="td_f2"><i>O(log N)</i></td>    
@@ -547,13 +547,13 @@
         <td class="td_f2"><i>O(log N) - O(N log N)</i></td>    
     </tr>
     <tr>
-        <td class="td_cpp">a.split(b,i)</td>    
+        <td class="td_cpp">a.split(i,b)</td>    
         <td class="td_f2">-</td>    
         <td class="td_f2"><i>O(log N)</i></td>    
         <td class="td_f2"><i>O(log N)</i></td>    
     </tr>
     <tr>
-        <td class="td_cpp">a.split(b,i1,i2)</td>    
+        <td class="td_cpp">a.split(i1,i2,b)</td>    
         <td class="td_f2">-</td>    
         <td class="td_f2"><i>O(log N)</i></td>    
         <td class="td_f2"><i>O(log N)</i></td>    
@@ -585,7 +585,7 @@
     In addition to this, in algorithms that visit distant elements 
     the random access iterators of the array based B+ trees 
     are less efficient than iterators of <code>std::vector</code>. 
-    The operators <code>{+=, -=, +, -}</code>, which change 
+    The operators <code>{+=, -=, +, -}</code>, that change 
     the position of a random access iterator of a B+ tree, 
     in the worst case have computational cost <i>O(log N)</i>. 
     </p>

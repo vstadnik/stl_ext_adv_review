@@ -3,18 +3,22 @@ Copyright Vadim Stadnik 2011-2012.
 Distributed under the Boost Software License, Version 1.0.
 (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+
 SUMMARY
 
 The proposed library stl_ext_adv offers augmented array based B+ trees 
 and STL containers that support the interfaces of the C++03 sequences 
 and associative containers. The library offers a number of extensions 
-and performance improvements that are not available in both 
+and performance improvements that are not available in 
 C++03 and C++11 standard containers. 
+
+
+OVERVIEW 
 
 Both sequences and associative containers support: 
 - random access iterators;
 - logarithmic time insert and erase operations for 
-  a single element anywhere within the container;
+  a single element anywhere within a container;
 
 Sequences support:
 - the union of interfaces of the C++03 sequence containers: 
@@ -23,7 +27,7 @@ Sequences support:
   that guarantee logarithmic complexity in the worst case;
 
 Associative containers support:
-- equally efficient access to elements by their keys and by positions;
+- equally efficient access to elements by their keys and positions;
 - logarithmic time search operations using keys of the container elements;
 - logarithmic time split operations in the general case and 
   logarithmic time merge operations in special cases. 
@@ -38,7 +42,8 @@ offer more efficient algorithms against equivalent dynamically
 allocated data structures. The wide set of the efficient member 
 functions provided by the new containers makes them useful to improve 
 the performance of algorithms using the standard containers with 
-at least one relatively inefficient operation.
+at least one relatively inefficient operation or a bidirectional 
+iterator. 
 
 
 EXAMPLES 
@@ -53,7 +58,7 @@ from O(N) to O(log N) in the following applications and problems:
 - calculation of mean value and standard deviation;
 - calculation of weighted mean value;
 - testing if any number of consecutive elements are equal;
-- counting intersections of one interval with sequence intervals; 
+- counting intersections of one interval with a sequence of intervals; 
 
 
 COMPILERS
