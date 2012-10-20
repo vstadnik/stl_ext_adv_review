@@ -51,14 +51,15 @@ EXAMPLES
 Simple examples of uses of the containers and algorithms are available 
 in the test code of this project, see files in the folder "test". 
 
-Advanced examples in the folder "example" 
-demonstrate how to improve the computational complexity 
-from O(N) to O(log N) in the following applications and problems: 
+Examples in the folder "example" demonstrate how to improve 
+the computational complexity from O(N) to O(log N) in 
+the following applications and problems: 
 - numerical integration;
 - calculation of mean value and standard deviation;
 - calculation of weighted mean value;
 - testing if any number of consecutive elements are equal;
 - counting intersections of one interval with a sequence of intervals; 
+- string concatenation and replacement;
 
 
 COMPILERS

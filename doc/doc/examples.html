@@ -39,6 +39,7 @@
 
 <div class="div_f1_frame"> 
   <dl>
+    <dd class="dd_f1"><a class="link_under" href="#ex_string">Efficient string algorithms</a></dd>  
     <dd class="dd_f1"><a class="link_under" href="#ex_interval">Fast counting of intersections of one interval with sequence of intervals</a></dd>
     <dd class="dd_f1"><a class="link_under" href="#ex_mean_val">Mean value</a></dd>
     <dd class="dd_f1"><a class="link_under" href="#ex_adv_exam">Advanced examples using fast algorithm <cod>accumulate()</code></a></dd>
@@ -69,12 +70,143 @@
     <p>
     In order to simplify the demo code and focus on the main features of algorithms 
     based on the advanced data structures, the data members of classes specific to 
-    problem domains are of type <code>int</code>. The algorithms operating with 
+    numerical problem domains are of type <code>int</code>. The algorithms operating with 
     integral types take advantage of precise values and use relational and equality 
     operators without a tolerance parameter. In practical applications, data types 
     and operations can be parameterized to support generic algorithms.     
     </p>
+
+
+    <a name="ex_string"></a>
+    <h4 class="h4_f1">
+    Efficient string algorithms
+    </h4>  
+
+    <p>
+    The efficient string algorithms and text editors are major applications 
+    for advanced and augmented data structures. 
+    <a href="http://en.wikipedia.org/wiki/Rope_(data_structure)">Rope</a> 
+    data structure provides several string operations 
+    more efficient than an array or a linked list.     
+    An augmented Finger Tree is another data structure with comparable facilities. 
+    It is used in the functional programming language Haskell for implementation of the 
+    <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/containers/Data-Sequence.html">
+    <code>Data.Sequence</code></a> container.     
+    </p>
     
+    <p>
+    The figure 1 of the section 
+    <a href="bp_trees_design.html">Design and implementation of B+ trees</a> 
+    shows two representations of a string: one using an augmented array based B+ tree 
+    and the other one using an array. The efficient string operations offered by 
+    the B+ trees can be used through the <code>sequence</code> container of 
+    the namespace <code>std_ext_adv</code>, see the code in the file 
+    <code>&quot;string.cpp&quot;</code>. 
+    </p>
+
+    <p>
+    The example string type    
+    </p>
+    
+<pre>
+    typedef std_ext_adv::sequence&lt;char&gt;    StringChar ;
+</pre>
+    
+    <p>
+    can be regarded as an improved <code>std::vector&lt;char&gt;</code> container that 
+    supports logarithmic time insert and erase operations for a single element. 
+    In addition to this, an algorithm using this container obtains efficient 
+    logarithmic time splice and split operations that eliminate unnecessary and 
+    costly copy operations. This is why compared to <code>std::string</code>, 
+    <code>StringChar</code> offers a set of much more efficient operations for strings. 
+    </p>
+    
+    <p>
+    A <code>std::string</code> can be converted to a <code>StringChar</code> 
+    through its constructor     
+    </p>
+    
+<pre>
+    StringChar    string( std_str.begin(), std_str.end() ) ; 
+</pre>
+    
+    <p>
+    alternatively, it can be inserted directly before a required position     
+    </p>                            
+
+<pre>
+    string . insert( pos, std_str.begin(), std_str.end() ) ;
+</pre>
+
+    <p>
+    Similar conversions can be used to return a processed string or text 
+    from <code>StringChar</code> to <code>std::string</code>.
+    </p>                            
+
+    <p>
+    The example functions in the file <code>&quot;string.cpp&quot;</code> 
+    demonstrate string operations based on the efficient move semantics algorithms. 
+    These algorithms do not copy and do not erase strings and substrings involved. 
+    They just move a range of characters from one string into another. 
+    Thus, each of the three operations discussed below has logarithmic 
+    computational complexity. 
+    </p>                            
+
+    <p>
+    The string concatenation is just a special case of the splice operation:     
+    </p>                            
+
+<pre>
+    string_a . splice ( string_a.end() , string_b ) ;
+</pre>
+
+    <p>
+    A substring can be easily obtained using the member function <code>spit()</code>:
+    </p>                            
+
+<pre>
+    string . split( pos_a , pos_b , sub_string ) ;
+</pre>
+
+    <p>
+    The replace substring operation applies both of the discussed operations:     
+    </p>                            
+
+<pre>
+    pos = string . split ( pos_a , pos_b , sub_str ) ; 
+    pos = string . splice( pos , sub_str_new ) ;
+</pre>
+
+    <p>
+    The <code>split()</code> function extracts a substring to be replaced, 
+    then the <code>splice()</code> function moves a new substring at 
+    the position of the extracted substring. Note that this example code 
+    uses updated iterators returned by <code>StringChar</code> member functions. 
+    This code addresses the problem of invalidation of iterators of 
+    array based containers, for more details see the section 
+    <a href="iterators.html">Random access iterators of array based B+ trees</a>. 
+    </p>                            
+
+    <p>
+    In a text editor <code>StringChar</code> can represent a long text. 
+    This type of a string efficiently supports all main editing operations: 
+    cut, copy, paste, delete, find, replace, etc. The high performance and 
+    space optimized move semantics facilities are particularly beneficial for 
+    undo and redo commands with large text blocks.     
+    </p>                            
+
+    <p>
+    In practical applications it is important to minimize the number of conversions 
+    between different types of strings to obtain the best performance. Unfortunately, 
+    the STL design for strings is inconsistent with other standard containers, 
+    since many string algorithms are implemented as member functions of 
+    the class <code>std::basic_string</code>. The same algorithms using iterator ranges 
+    could be directly applied to both standard stings and strings based on advanced 
+    data structures. These variants of string algorithms would considerably reduce 
+    the frequency of conversions to and from <code>std::string</code> and 
+    improve performance of user algorithms. 
+    </p>
+
 
     <a name="ex_interval"></a>
     <h4 class="h4_f1">
@@ -754,7 +886,7 @@
 
   <p>Revised 
   <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
-  22 September, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+  20 October, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
 
   <p><i>Copyright &copy; 2011-2012</i> 
   <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>
