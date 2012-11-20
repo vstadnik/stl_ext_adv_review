@@ -1,0 +1,669 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <link rel="stylesheet" type="text/css" href="../../../boost.css">
+  <link rel="stylesheet" type="text/css" href="images/bpt_styles.css">  
+
+  <title>boost_comparison</title>
+</head>
+
+<body link="#0000FF" vlink="#800080">
+  <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+  "header">
+    <tr>
+      <td valign="top" width="300">
+        <h3><a href="../../../index.htm"><img height="86" width="277" alt=
+        "C++ Boost" src="images/boost.png" border="0"></a></h3>
+      </td>
+    </tr>
+  </table>
+
+  
+  <hr>  
+  <div align="right">
+    <a href="introduction.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="examples.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+  
+  
+  
+
+<h2 align="left">  
+    Comparison with Boost.Container library    
+</h2>
+
+    
+    <p>  
+    The 
+    <a href="http://www.boost.org/doc/libs/1_51_0/doc/html/container.html"><b>Boost.Container</b> library</a>     
+    provides a number of features that are currently not available in the 
+    containers of the namespace <code>std_ext_adv</code>. <b>Boost.Container</b> 
+    offers almost complete support for the C++11 standard features, 
+    such as move semantics, and backports this support to C++03 compliant 
+    compilers. The list of other useful features includes type erasure, 
+    recursive types and the compatibility with <b>Boost.Interprocessor</b>.
+    The containers of the namespace <code>std_ext_adv</code> 
+    currently conform to the C++03 standard only. 
+    </p>  
+  
+    <p>  
+    The <b>Boost.Container</b> library includes a wide variety of both 
+    standard and non-standard containers that support STL interfaces. 
+    This section discusses the non-standard Boost containers 
+    with the main focus on the comparison of extensions of the STL facilities 
+    offered by both libraries. 
+    </p>  
+
+
+    <h4>
+    <code>stable_vector</code> 
+    </h4>
+  
+    <p>  
+    Out of all the non-standard Boost containers <code>stable_vector</code> is 
+    particularly interesting, since it combines features of both array based and 
+    dynamically allocated data structures. This container has the same interface 
+    and the same computational complexities of operations as <code>std::vector</code>. 
+    The main advantage of <code>stable_vector</code> is that its random access 
+    iterators and references to elements are not invalidated by update operations 
+    unless an element pointed to by an iterator or a reference is erased. 
+    This functionality is implemented through an array that stores in its cells 
+    pointers to nodes with elements. A node with a container element has a reverse 
+    link to an array cell with a pointer that points to the node. An iterator of 
+    this container remains valid, since insert and erase operations modify 
+    the pointer array only. The nodes are not moved in the memory space and 
+    the container elements are accessed through pointers to the nodes. 
+    The stability of random access iterators, however, comes at the expense of 
+    worse locality of reference compared to <code>std::vector</code>. 
+    </p>  
+  
+    <p>  
+    The augmented B+ trees have two options to provide 
+    this facility of the <code>stable_vector</code> container. 
+    The <a href="https://github.com/vstadnik/stl_ext_adv">dynamically allocated B+ trees</a> 
+    offer iterators that have properties of both random access and bidirectional iterators. 
+    The computational cost of some operations supporting this functionality is logarithmic. 
+    The array based B+ trees should be more efficient provided that they implement 
+    the key idea of <code>stable_vector</code>. This variant of a B+ tree would 
+    partition the pointer array of a <code>stable_vector</code> into a list of 
+    sub-arrays storing pointers to nodes with the container elements. 
+    These data structures should be beneficial for algorithms processing large objects, 
+    since operations with pointers are much cheaper in this case. 
+    STL containers, both sequences and associative containers, using these 
+    specialized array based B+ trees will obtain the advantage of efficient 
+    logarithmic time insert, erase, splice and split operations that are 
+    not achievable with <code>stable_vector</code>.     
+    </p>  
+
+
+    <h4>
+    <code>flat_(multi)map/set</code>
+    </h4>
+  
+    <p>  
+    The associative containers <code>flat_(multi)map/set</code> represent 
+    ordered vectors that support interfaces of the matching standard containers 
+    based on dynamically allocated red black trees. The contiguous arrangement of 
+    elements improves the use of space and locality of reference. 
+    These new containers offer more efficient random access iterators and 
+    faster search by key than the standard containers. The disadvantage of 
+    these containers is relatively high linear cost of insert and erase operations.     
+    </p>  
+
+    <p>
+    The data structures of the namespace <code>std_ext_adv</code> take advantage 
+    of the efficient pointer arithmetic and, thus, offer similar improvements 
+    for the associative containers. These containers support efficient access to 
+    the container elements by their keys and positions. Compared to 
+    <b>Boost.Container</b> their random access iterators are a bit less efficient 
+    due to logarithmic cost of moving to a distant position. Locality of reference 
+    is also a bit worse than in array based associative containers of 
+    <b>Boost.Container</b>, since augmented B+ trees implement a partition of 
+    an array. Nevertheless, this parameter is much better than in dynamically 
+    allocated red black trees of the standard containers. Unlike Boost array based 
+    containers, the associative containers of the namespace <code>std_ext_adv</code> 
+    do not have the disadvantage of inefficient insert and erase operations. 
+    Additionally, they support logarithmic time split operations in the general case 
+    and merge operations in special cases. 
+    </p>  
+
+
+    <h4>
+    <code>slist</code>
+    </h4>
+
+    <p>  
+    The <b>Boost.Container</b> <code>slist</code> compliments the C++11 container 
+    <code>forward_list</code> by adding constant time function <code>size()</code>. 
+    As a result of this feature the running time of one of the standard functions 
+    <code>splice_after()</code> increases from constant to linear. To improve 
+    performance of a user algorithm this container provides the new 
+    <code>splice_after()</code> function with constant computational complexity. 
+    However, this function assumes that a user algorithm controls and counts 
+    the number of moved elements.     
+    </p>  
+  
+    <p>  
+    The sequences of the namespace <code>std_ext_adv</code> support splice and 
+    split operations with logarithmic running time without any restrictions. 
+    Their random access iterators are more efficient and provide more extensive 
+    set of operations than forward iterators of <code>slist</code>. 
+    </p>  
+  
+    
+    <h4>
+    Discussion
+    </h4>
+
+    <p>
+    In both compared libraries the STL extensions are achieved through 
+    new types of non-standard containers. <b>Boost.Container</b> supports 
+    the extensions by implementing a wide variety of containers with 
+    a relatively small number of specific improvements in each container. 
+    The namespace <code>std_ext_adv</code> provides a small number of basic containers, 
+    but each of them supports a wide variety of STL sequences and associative containers. 
+    </p>  
+  
+    <p>
+    This difference between two libraries is significant for the performance of 
+    complex algorithms, since a set of <i>N</i> specialized containers with one efficient 
+    member function or iterator in each is normally less beneficial than one container 
+    with a set of <i>N</i> efficient member functions required in a user algorithm. 
+    This performance benefit is provided by advanced data structures and it is not 
+    achievable with data structures used in <b>Boost.Container</b> and the C++ standard library.
+    </p>  
+
+    
+    <h4>
+    Summary
+    </h4>
+
+  <ul>
+    <li class="li_sum">
+    <code><b>(+)</b></code> <b>Boost.Container</b> offers a number of features, 
+    such as C++11 move semantics, type erasure and recursive data types, that are 
+    currently not supported by the containers of the namespace <code>std_ext_adv</code>. 
+    </li>    
+    
+    <li class="li_sum">
+    <code><b>(=)</b></code> The containers of the namespace <code>std_ext_adv</code> 
+    support stable iterators of Boost <code>stable_vector</code> through dynamically 
+    allocated B+ trees and can support through specialized array based B+ trees. 
+    </li>    
+    
+    <li class="li_sum">
+    <code><b>(=)</b></code> Both libraries provide containers with improved 
+    use of space and locality of reference against the standard containers 
+    based on dynamically allocated data structures. 
+    </li>    
+    
+    <li class="li_sum">
+    <code><b>(=)</b></code> Both libraries offer associative containers with 
+    random access iterators and efficient search by keys. 
+    </li>    
+    
+    <li class="li_sum">
+    <code><b>(-)</b></code> The array based containers of <b>Boost.Container</b>, 
+    including non-standard associative containers and <code>stable_vector</code>, 
+    have inefficient linear time insert and erase operations 
+    for a single element anywhere within a container. 
+    </li>    
+    
+    <li class="li_sum">
+    <code><b>(-)</b></code> <b>Boost.Container</b> library does not implement 
+    optimized memory management for the array based containers. 
+    </li>
+    
+    <li class="li_sum">
+    <code><b>(-)</b></code> The containers of <b>Boost.Container</b> do not support 
+    general efficient splice and split operations. 
+    </li>    
+    
+    <li class="li_sum">
+    <code><b>(-)</b></code> Boost containers do not offer logarithmic time 
+    <code>accumulate()</code> algorithm. 
+    </li>
+    
+    <li class="li_sum">
+    <code><b>(-)</b></code> The <b>Boost.Container</b> sequences are not completely 
+    interchangeable due to differences in interfaces similar to the standard containers. 
+    None of them can match the wide set of efficient operations of 
+    <code>std_ext_adv::sequence</code>. 
+    </li>    
+    
+    <li class="li_sum">
+    <code><b>(-)</b></code> Boost containers do not reach the level of 
+    generalization of containers of the namespace <code>std_ext_adv</code>. 
+    </li>    
+    
+  </ul>
+
+    
+    <h4>
+    Conclusion
+    </h4>
+
+    <p>  
+    This brief comparison shows that there are many useful STL extensions already 
+    implemented in the compared libraries. Other data structures, first of all 
+    augmented red black trees, can provide similar and new improvements to 
+    the C++ standard facilities. 
+    </p>  
+
+    <p>  
+    In the general case, a new STL extension can be added to a library 
+    if there is a performance gain for user algorithms offered by 
+    a new data structure or by a new algorithm or there is a new useful facility, 
+    such as random access iterators not invalidated by update operations. 
+    This is why the challenge for every library that offers STL facilities 
+    with extensions is to find the best implementation method that takes 
+    advantage of any beneficial data structure that can support STL interfaces of 
+    containers and iterators. The namespace <code>std_ext_adv</code> solves 
+    this task using the container adapters. 
+    </p>  
+
+    <p>  
+    The <b>Boost.Container</b> library should offer a solution that will allow integrating 
+    not only all of the already implemented, but also future extensions provided by new 
+    data structures and algorithms. This library should be open for the maximum possible 
+    number of new STL extensions. When this solution is tested and is proven to be 
+    useful and successful it can be proposed for the C++1y STL. The new level of 
+    efficiency of the STL facilities using a wide range of data structures and algorithms 
+    will give the C++ programming language a highly competitive advantage. 
+    </p>  
+    
+
+    <h4>
+    Comparison of performance
+    </h4>
+    
+    <p>
+    Each sequence or associative container of the namespace <code>std_ext_adv</code> 
+    offers a wider set of efficient operations than any matching container of 
+    the standard and <b>Boost.Container</b> libraries. The performance benefit of 
+    new containers for user algorithms can be demonstrated with the following simple test, 
+    see the source code in the file <code>&quot;boost_performance.cpp&quot;</code>, 
+    that moves an iterator to a specified position and inserts a new element: 
+    </p>
+    
+<pre>
+    std::advance ( pos , dist ) ;               //  C1
+    constainer . insert ( pos , val_new ) ;     //  C2 
+</pre>
+
+    <p>  
+    For all the types of containers based on dynamically allocated linked lists 
+    and red black trees the computational complexity of the first operation 
+    <code>C1</code> is <i>O(N)</i>, <code>C2</code> varies between <i>O(1)</i> and 
+    <i>O(log N)</i>. For all the types of array based containers, including 
+    <code>std::vector</code> and Boost <code>stable_vector</code>, 
+    <code>C1</code> = <i>O(1)</i> and <code>C2</code> = <i>O(N)</i>. 
+    Thus, the total cost of these two operations is <i>O(N)</i> for all of 
+    these containers. When these two operations are performed inside a loop 
+    the running time of the test is quadratic. For a large number of elements 
+    such loop creates a performance bottleneck. 
+    </p>  
+    
+    <p>  
+    The augmented B+ trees, both dynamically allocated and array based, 
+    perform much better in this test. For any of the new containers 
+    the total running time is <i>O(N log N)</i>, since both basic 
+    operations have the same computational complexity 
+    <code>C1 = C2 = </code> <i>O(log N)</i> in the worst case. 
+    </p>  
+
+    <p>  
+    In all the following tables <code>sequence_array</code> and <code>multiset_array</code> 
+    denote containers <code>std_ext_adv::sequence</code> and <code>std_ext_adv::multiset</code> 
+    using array based B+ trees, 
+    <code>sequence_list</code> - container <code>std_ext_adv::sequence</code> using a 
+    <a href="https://github.com/vstadnik/stl_ext_adv">dynamically allocated augmented B+ tree</a>; 
+    <code>boost::flat_multiset</code> denotes <code>boost::container::flat_multiset</code> 
+    and <code>boost::stable_vector</code> denotes <code>boost::container::stable_vector</code>. 
+    Tested libraries: the standard containers of MSVC++ 9, <b>Boost.Container</b> version 1.51. 
+    The system parameters: Intel Core 2 Duo Processor E6400, 2.13GHz, 
+    2.00MB of L2 Cache, 2.00GB of RAM, Windows XP 32 bits. 
+    </p>
+    
+    <p>      
+    The first table shows values of running times of the discussed test in milliseconds 
+    against the number of elements. The results are consistent with the estimates of 
+    computational complexities. 
+    </p>  
+    
+  <table class="tbl_f1">
+    <tr>
+        <td class="td_f1"><b><i>N</i></b></td>  
+        <td class="td_f1_rt"><b><i>1.0e+3</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+4</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+5</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+6</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+7</i></b></td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>sequence_array</code></td>  
+        <td class="td_f1_rt">2.7e-1</td>
+        <td class="td_f1_rt">2.7e+0</td>
+        <td class="td_f1_rt">3.3e+1</td>
+        <td class="td_f1_rt">6.2e+2</td>
+        <td class="td_f1_rt">1.4e+4</td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>sequence_list</code></td>  
+        <td class="td_f1_rt">2.7e-1</td>
+        <td class="td_f1_rt">3.3e+0</td>
+        <td class="td_f1_rt">5.1e+1</td>
+        <td class="td_f1_rt">1.4e+3</td>
+        <td class="td_f1_rt">2.2e+4</td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>multiset_array</code></td>  
+        <td class="td_f1_rt">4.0e-1</td>
+        <td class="td_f1_rt">4.4e+0</td>
+        <td class="td_f1_rt">6.0e+1</td>
+        <td class="td_f1_rt">1.1e+3</td>
+        <td class="td_f1_rt">3.1e+4</td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>std::vector</code></td>  
+        <td class="td_f1_rt">2.7e-1</td>
+        <td class="td_f1_rt">1.6e+1</td>
+        <td class="td_f1_rt">2.2e+3</td>
+        <td class="td_f1_rt">3.5e+5</td>
+        <td class="td_f1_rt"> - </td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>boost::vector</code></td>  
+        <td class="td_f1_rt">2.1e-1</td>
+        <td class="td_f1_rt">1.5e+1</td>
+        <td class="td_f1_rt">2.2e+3</td>
+        <td class="td_f1_rt">3.5e+5</td>
+        <td class="td_f1_rt"> - </td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>boost::flat_multiset</code></td>  
+        <td class="td_f1_rt">2.4e-1</td>
+        <td class="td_f1_rt">1.5e+1</td>
+        <td class="td_f1_rt">2.0e+3</td>
+        <td class="td_f1_rt">3.0e+5</td>
+        <td class="td_f1_rt"> - </td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>boost::stable_vector</code></td>  
+        <td class="td_f1_rt">6.6e-1</td>
+        <td class="td_f1_rt">1.1e+2</td>
+        <td class="td_f1_rt">1.3e+4</td>
+        <td class="td_f1_rt">6.2e+6</td>
+        <td class="td_f1_rt"> - </td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>boost::list</code></td>  
+        <td class="td_f1_rt">4.9e-1</td>
+        <td class="td_f1_rt">1.3e+2</td>
+        <td class="td_f1_rt">2.1e+4</td>
+        <td class="td_f1_rt"> - </td>
+        <td class="td_f1_rt"> - </td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>std::list</code></td>  
+        <td class="td_f1_rt">1.3e+0</td>
+        <td class="td_f1_rt">2.0e+2</td>
+        <td class="td_f1_rt">2.7e+4</td>
+        <td class="td_f1_rt"> - </td>
+        <td class="td_f1_rt"> - </td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>boost::multiset</code></td>  
+        <td class="td_f1_rt">3.0e+0</td>
+        <td class="td_f1_rt">3.8e+2</td>
+        <td class="td_f1_rt">4.5e+4</td>
+        <td class="td_f1_rt"> - </td>
+        <td class="td_f1_rt"> - </td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>std::multiset</code></td>  
+        <td class="td_f1_rt">4.0e+0</td>
+        <td class="td_f1_rt">4.7e+2</td>
+        <td class="td_f1_rt">6.4e+4</td>
+        <td class="td_f1_rt"> - </td>
+        <td class="td_f1_rt"> - </td>
+    </tr>
+  </table>
+
+    
+    <p>
+    The efficiency of access to data stored in a container can significantly 
+    affect the performance of user algorithms. This factor is particularly 
+    important for dynamically allocated data structures, since they have 
+    worse locality of reference than array based data structures 
+    that store elements contiguously. The variation of performance 
+    associated with locality of reference can be estimated using 
+    the sequential algorithm <code>std::accumulate()</code>, which is 
+    applied to containers constructed in the previous test. The following table 
+    shows values of running times in microseconds against the number of elements.    
+    </p>
+    
+  <table class="tbl_f1">
+    <tr>
+        <td class="td_f1"><b><i>N</i></b></td>  
+        <td class="td_f1_rt"><b><i>1.0e+3</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+4</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+5</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+6</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+7</i></b></td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>std::vector</code></td>  
+        <td class="td_f1_rt">6.4e+0</td>
+        <td class="td_f1_rt">7.0e+1</td>    
+        <td class="td_f1_rt">6.9e+2</td>    
+        <td class="td_f1_rt">9.6e+3</td>    
+        <td class="td_f1_rt"> - </td>   
+    </tr>
+    <tr>
+        <td class="td_f1"><code>boost::vector</code></td>  
+        <td class="td_f1_rt">6.4e+0</td>    
+        <td class="td_f1_rt">7.0e+1</td>    
+        <td class="td_f1_rt">6.9e+2</td>    
+        <td class="td_f1_rt">9.7e+3</td>    
+        <td class="td_f1_rt"> - </td>   
+    </tr>
+    <tr>
+        <td class="td_f1"><code>sequence_array</code></td>  
+        <td class="td_f1_rt">2.9e+1</td>    
+        <td class="td_f1_rt">2.9e+2</td>    
+        <td class="td_f1_rt">3.1e+3</td>    
+        <td class="td_f1_rt">4.9e+4</td>  
+        <td class="td_f1_rt">5.6e+5</td>  
+    </tr>
+    <tr>
+        <td class="td_f1"><code>boost::stable_vector</code></td>  
+        <td class="td_f1_rt">4.0e+1</td>    
+        <td class="td_f1_rt">8.8e+2</td>    
+        <td class="td_f1_rt">1.4e+4</td>    
+        <td class="td_f1_rt">7.5e+5</td>    
+        <td class="td_f1_rt"> - </td>   
+    </tr>
+    <tr>
+        <td class="td_f1"><code>std::list</code></td>  
+        <td class="td_f1_rt">2.6e+1</td>    
+        <td class="td_f1_rt">7.8e+2</td>    
+        <td class="td_f1_rt">2.3e+4</td>    
+        <td class="td_f1_rt"> - </td>    
+        <td class="td_f1_rt"> - </td>   
+    </tr>
+    <tr>
+        <td class="td_f1"><code>sequence_list</code></td>  
+        <td class="td_f1_rt">3.0e+1</td>    
+        <td class="td_f1_rt">8.5e+2</td>    
+        <td class="td_f1_rt">2.8e+4</td>    
+        <td class="td_f1_rt">7.8e+5</td>  
+        <td class="td_f1_rt">9.3e+6</td>  
+    </tr>
+    <tr>
+        <td class="td_f1"><code>std::multiset</code></td>  
+        <td class="td_f1_rt">2.7e+2</td>    
+        <td class="td_f1_rt">3.1e+3</td>    
+        <td class="td_f1_rt">5.8e+4</td>    
+        <td class="td_f1_rt"> - </td>    
+        <td class="td_f1_rt"> - </td>   
+    </tr>
+  </table>
+    
+
+    <p>  
+    For the analysis of this performance test relative costs are 
+    more informative than the measured absolute values. In the next table 
+    all the running times are normalized by the mean time 
+    of a single operation of <code>std::vector</code> at <i>N</i> = 10,000. 
+    </p>  
+    
+  <table class="tbl_f1">
+    <tr>
+        <td class="td_f1"><b><i>N</i></b></td>  
+        <td class="td_f1_rt"><b><i>1.0e+3</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+4</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+5</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+6</i></b></td>
+        <td class="td_f1_rt"><b><i>1.0e+7</i></b></td>
+    </tr>
+    <tr>
+        <td class="td_f1"><code>std::vector</code></td>  
+        <td class="td_f1_rt">0.9</td>    
+        <td class="td_f1_rt">1.0</td>    
+        <td class="td_f1_rt">1.0</td>    
+        <td class="td_f1_rt">1.4</td>    
+        <td class="td_f1_rt"> - </td>   
+    </tr>
+    <tr>
+        <td class="td_f1"><code>boost::vector</code></td>  
+        <td class="td_f1_rt">0.9</td>    
+        <td class="td_f1_rt">1.0</td>    
+        <td class="td_f1_rt">1.0</td>    
+        <td class="td_f1_rt">1.4</td>    
+        <td class="td_f1_rt"> - </td>   
+    </tr>
+    <tr>
+        <td class="td_f1"><code>sequence_array</code></td>  
+        <td class="td_f1_rt">4.1</td>    
+        <td class="td_f1_rt">4.1</td>    
+        <td class="td_f1_rt">4.4</td>    
+        <td class="td_f1_rt">7.0</td>    
+        <td class="td_f1_rt">8.0</td>            
+    </tr>
+    <tr>
+        <td class="td_f1"><code>boost::stable_vector</code></td>  
+        <td class="td_f1_rt">5.7</td>    
+        <td class="td_f1_rt">13.0</td>    
+        <td class="td_f1_rt">20.0</td>    
+        <td class="td_f1_rt">105.0</td>    
+        <td class="td_f1_rt"> - </td>   
+    </tr>
+    <tr>
+        <td class="td_f1"><code>std::list</code></td>  
+        <td class="td_f1_rt">3.7</td>    
+        <td class="td_f1_rt">11.0</td>    
+        <td class="td_f1_rt">33.0</td>    
+        <td class="td_f1_rt"> - </td>    
+        <td class="td_f1_rt"> - </td>   
+    </tr>
+    <tr>
+        <td class="td_f1"><code>sequence_list</code></td>  
+        <td class="td_f1_rt">4.3</td>    
+        <td class="td_f1_rt">12.0</td>    
+        <td class="td_f1_rt">40.0</td>    
+        <td class="td_f1_rt">110.0</td>    
+        <td class="td_f1_rt">130.0</td>            
+    </tr>
+    <tr>
+        <td class="td_f1"><code>std::multiset</code></td>  
+        <td class="td_f1_rt">38.0</td>    
+        <td class="td_f1_rt">44.0</td>    
+        <td class="td_f1_rt">83.0</td>    
+        <td class="td_f1_rt"> - </td>    
+        <td class="td_f1_rt"> - </td>   
+    </tr>
+  </table>
+    
+
+    <p>  
+    The worst performance in this test shows <code>std::multiset</code> 
+    based on a red black tree. Two other containers using dynamically 
+    allocated data structures, <code>std::list</code> and 
+    <code>sequence_list</code>, have better running times, however, 
+    they increase quite sharply with the increase in the number of container elements. 
+    </p>      
+    
+    <p>      
+    The most efficient for sequential processing are <code>vector</code> 
+    containers. Unlike containers based on dynamically allocated 
+    data structures, their values of running times are relatively small 
+    and do not vary much as the number of elements changes. 
+    The containers <code>std_ext_adv::sequence</code> and 
+    <code>std_ext_adv::multiset</code> using array based B+ trees 
+    are less efficient than <code>std::vector</code>, however, 
+    the increase in the values of running times is consistent 
+    with that in <code>std::vector</code>. 
+    This important fact points to good locality of reference 
+    of the augmented array based B+ trees. For this reason 
+    the performance of new containers remains high 
+    even when they store large numbers of elements. 
+    </p>      
+
+    <p>  
+    The results for Boost hybrid container <code>stable_vector</code> are 
+    quite interesting. As an array based container it is less efficient 
+    than <code>std::vector</code> and <code>std_ext_adv::sequence</code>. 
+    In this test <code>stable_vector</code> has running times close to those 
+    of containers using dynamically allocated data structures and 
+    its relative cost is similarly sensitive to the number of elements.     
+    </p> 
+
+    <p>  
+    The standard containers offer various implementation options for 
+    user algorithms. In particular, an algorithm that is applied to a sequence of 
+    elements can have two different variants using either <code>std::list</code> 
+    or <code>std::vector</code>. The <code>std_ext_adv::sequence</code> 
+    can replace any of the standard sequences. Hence, the question arises 
+    which variant is preferrable for an algorithm using a new container? 
+    The results of these performance tests suggest that, normally, 
+    a variant based on <code>std::vector</code> should be the first choice, 
+    since it offers the advantage of efficient sequential processing. 
+    </p>  
+  
+  <hr>
+
+  <p><a href="http://validator.w3.org/check?uri=referer"><img border="0" src=
+  "images/valid-html401.png" alt="Valid HTML 4.01 Transitional"
+  height="31" width="88"></a></p>
+
+  <p>Revised 
+  <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
+  20 November, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+
+  <p><i>Copyright &copy; 2011-2012</i> 
+  <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>
+  </p>
+
+  <p><i>Distributed under the Boost Software License, Version 1.0. (See
+  accompanying file <a href="images/LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+  copy at <a href=
+  "http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)</i></p>
+  
+  
+  <hr>  
+  <div align="right">
+    <a href="introduction.html"><img src="images/prev.png" border=0 alt="Prev"></a>
+    <a href="../index.html"><img src="images/up.png" border=0 alt="Up"></a>
+    <a href="../index.html"><img src="images/home.png" border=0 alt="Home"></a>
+    <a href="examples.html"><img src="images/next.png" border=0 alt="Next"></a>    
+  </div> 
+  
+  
+</body>
+</html>
