@@ -196,6 +196,18 @@ td.td_f1
 }
 
 
+td.td_f1_rt
+{
+	border           : 1px solid Black ;	
+	padding-left     : 32px   ;
+	padding-right    : 32px   ;	
+	padding-top      :  4px   ;
+	padding-bottom   :  4px   ;
+	text-align		 : right  ;
+	vertical-align   : top    ;
+}
+
+
 /* same as td_f1, but nowrap for white spaces */
 td.td_f2
 {
@@ -209,6 +221,45 @@ td.td_f2
 	white-space      : nowrap ;
 }
 
+td.td_f2_yel
+{
+	border           : 1px solid Black ;	
+	padding-left     : 32px   ;
+	padding-right    : 32px   ;	
+	padding-top      :  4px   ;
+	padding-bottom   :  4px   ;
+	text-align		 : left   ;
+	vertical-align   : top    ;
+	white-space      : nowrap ;
+	background-color : #ffffdd;			
+}
+
+
+td.td_f2_red
+{
+	border           : 1px solid Black ;	
+	padding-left     : 32px   ;
+	padding-right    : 32px   ;	
+	padding-top      :  4px   ;
+	padding-bottom   :  4px   ;
+	text-align		 : left   ;
+	vertical-align   : top    ;
+	white-space      : nowrap ;
+	background-color : #ff9090;		
+}
+
+td.td_f2_green
+{
+	border           : 1px solid Black ;	
+	padding-left     : 32px   ;
+	padding-right    : 32px   ;	
+	padding-top      :  4px   ;
+	padding-bottom   :  4px   ;
+	text-align		 : left   ;
+	vertical-align   : top    ;
+	white-space      : nowrap ;
+	background-color : #90ff90;		
+}
 
 td.td_cpp
 {
@@ -221,8 +272,16 @@ td.td_cpp
 	vertical-align   : top    ;
 	font-family      : Courier New ;	
 	font-size        : 10pt   ;	
+	white-space      : nowrap ;	
 }
 
+li.li_sum
+{
+	padding-top      : 8px   ;	
+/*	list-style       : square;*/ 
+	list-style       : none  ;
+	text-indent      : -28px ;
+} 
 
 /* special link to changes text-decoration */ 
 a.link_under:link {color:#000000;text-decoration:none;}
