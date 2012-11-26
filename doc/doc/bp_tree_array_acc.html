@@ -1272,7 +1272,70 @@ iterator  erase ( iterator  pos_a ,
     by allocator when the required storage cannot be obtained, 
     by the copy constructor or assignment operator of <code>T</code>. 
     </p>
-    
+
+
+<pre class="pre_f1">
+iterator  split ( iterator         pos  ,
+                  bp_tree_array &  that ) ;
+</pre>                       
+
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>pos</code> is a valid iterator of <code>*this</code> container;    
+    <code>that.empty()</code> returns <code>true</code>;
+    <code>this != &that</code>.     
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    iterator <code>end()</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts elements in the range <code>[pos, end())</code> 
+    into <code>that</code> 
+    and removes the elements from <code>*this</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where 
+    <i>N</i><code>=this->size()</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    <code>std::invalid_argument</code> if <code>that.empty()</code> 
+    returns <code>false</code>;     
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+iterator  split ( iterator         pos_a ,
+                  iterator         pos_b ,
+                  bp_tree_array &  that  ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Requires:</span>
+    <code>[pos_a, pos_b)</code> is a valid range of <code>*this</code> container; 
+    <code>that.empty()</code> returns <code>true</code>;
+    <code>this != &that</code>.     
+    </p>
+    <p class="p_f1"><span class="sp_f1">Returns:</span>
+    the iterator pointing to the element at the position 
+    pointed to by <code>pos_a</code> prior to the operation, 
+    if no such element exists iterator <code>end()</code> is returned. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Effects:</span>
+    inserts elements in the range <code>[pos_a, pos_b)</code> 
+    into <code>that</code> 
+    and removes the elements from <code>*this</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Complexity:</span>
+    <i>O(log N)</i>, where 
+    <i>N</i><code>=this->size()</code>. 
+    </p>
+    <p class="p_f1"><span class="sp_f1">Throws:</span>
+    <code>std::invalid_argument</code> if <code>that.empty()</code> 
+    returns <code>false</code>;     
+    exceptions thrown 
+    by allocator when the required storage cannot be obtained, 
+    by the copy constructor or assignment operator of <code>T</code>. 
+    </p>
 
 
 <pre class="pre_f1">
@@ -1453,7 +1516,7 @@ mapped_type  accumulate ( const_iterator  pos_a  ,
 
   <p>Revised 
   <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
-  22 September, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+  25 November, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
 
   <p><i>Copyright &copy; 2012</i> 
   <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>

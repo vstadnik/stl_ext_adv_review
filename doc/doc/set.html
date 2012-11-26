@@ -593,6 +593,25 @@ iterator  erase ( iterator  pos_a ,
 
 
 <pre class="pre_f1">
+iterator  split  ( iterator     pos  ,
+                   this_type &  that ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::split ( iterator  pos, this_type &  that )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
+iterator  split  ( iterator     pos_a ,
+                   iterator     pos_b ,
+                   this_type &  that  ) ;
+</pre>
+    <p class="p_f1"><span class="sp_f1">Description:</span>
+    see <code>_BPTree::split ( iterator  pos_a, iterator  pos_b, this_type &  that )</code>. 
+    </p>
+
+
+<pre class="pre_f1">
 void  merge ( this_type &  that ) ;
 </pre> 
     <p class="p_f1"><span class="sp_f1">Description:</span>
@@ -857,7 +876,7 @@ void swap ( set&lt; _K, _Pr, _A, _BPTree&gt; &  x ,
 
   <p>Revised 
   <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
-  22 September, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+  25 November, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
 
   <p><i>Copyright &copy; 2012</i> 
   <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>
