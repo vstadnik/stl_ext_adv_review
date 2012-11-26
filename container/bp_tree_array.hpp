@@ -16,6 +16,7 @@
 #define _BP_TREE_ARRAY_HPP
 
 
+#include <stdexcept>
 #include <iterator>
 #include <utility>
 #include <memory>
@@ -674,13 +675,13 @@ protected:
         _NodeLightPtr   p_lt_res = p_hn_beg->_get_node_light() ;
         return p_lt_res ;
     }
-    _NodeLightPtr   _external_end   ( ) const
+    _NodeLightPtr   _external_end ( ) const
     {
         _NodeHeavyPtr   p_hn_end = _bottom_end() ;
         _NodeLightPtr   p_lt_res = p_hn_end->_get_node_light() ;
         return p_lt_res ;
     }
-    _NodeLightPtr   _external_last  ( ) const
+    _NodeLightPtr   _external_last ( ) const
     {
         _NodeHeavyPtr   p_parent = _bottom_end()->p_prev ;
         _NodeLightPtr   p_lt_pos = p_parent->_get_node_light() ;

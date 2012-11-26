@@ -15,7 +15,6 @@
 #include <vector>
 #include <iostream>
 #include <assert.h>
-#include <stdexcept>
 #include "bpt_set.hpp"
 
 

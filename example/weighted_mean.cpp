@@ -17,7 +17,6 @@
 #include <vector>
 #include <numeric>
 #include <iostream>
-#include <stdexcept>
 #include "bp_tree_array_acc.hpp"
 #include "bpt_sequence.hpp"
 

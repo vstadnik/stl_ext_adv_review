@@ -16,6 +16,7 @@
 #define _BP_TREE_ARRAY_ACC_HPP
 
 
+#include <stdexcept>
 #include <iterator>
 #include <utility>
 #include <memory>

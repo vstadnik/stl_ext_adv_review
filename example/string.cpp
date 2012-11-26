@@ -14,7 +14,6 @@
 
 #include <iostream>
 #include <string> 
-#include <stdexcept>
 #include "bpt_sequence.hpp"
 
 
