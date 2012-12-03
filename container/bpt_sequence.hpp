@@ -144,8 +144,7 @@ public:
     template <class _InpIter>
     void        insert ( iterator  pos, _InpIter  pos_a, _InpIter  pos_b )
     {
-        this_type   ctr_copy ( pos_a, pos_b, get_allocator() ) ;
-        splice ( pos, ctr_copy ) ;
+        m_contr._insert_seqce_iter( pos, pos_a, pos_b ) ;
     }
     void  push_back  ( const value_type &  val ) { m_contr.push_back (val); }
     void  push_front ( const value_type &  val ) { m_contr.push_front(val); }
