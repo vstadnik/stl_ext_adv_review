@@ -31,12 +31,32 @@
   </div> 
   
   
-  
 
 <h2 align="left">  
-    Comparison with Boost.Container library    
+    Comparison with Boost.Container and Boost.MultiIndex libraries
 </h2>
+  
+    <p>
+    This section provides the comparison of STL containers using augmented B+ trees 
+    with the following Boost libraries: <b>Boost.Container</b> and <b>Boost.MultiIndex</b>. 
+    <b>Boost.Intrusive</b> is out of scope of this comparison, since intrusive containers 
+    do not support copy semantics and, thus, they are not STL compliant.     
+    </p>
+  
 
+<div class="div_f1_frame"> 
+  <dl>
+    <dd class="dd_f1"><a class="link_under" href="#boost_container">Comparison with Boost.Container library</a></dd>
+    <dd class="dd_f1"><a class="link_under" href="#boost_multi_index">Comparison with Boost.MultiIndex library</a></dd>
+  </dl>
+</div>
+<br>
+
+
+    <a name="boost_container"></a>
+    <h4 class="h4_f1">
+    Comparison with Boost.Container library
+    </h4>
     
     <p>  
     The 
@@ -635,6 +655,218 @@
     a variant based on <code>std::vector</code> should be the first choice, 
     since it offers the advantage of efficient sequential processing. 
     </p>  
+    
+    
+
+    <a name="boost_multi_index"></a>
+    <h4 class="h4_f1">
+    Comparison with Boost.MultiIndex library     
+    </h4>
+
+    <p>
+    The comparison of containers and data structures of the namespace <code>std_ext_adv</code>    
+    with <b>Boost.MultiIndex</b> is less trivial than with <b>Boost.Container</b>, 
+    since the functionality of the <b>Boost.MultiIndex</b> library is much wider 
+    than the functionality of any library of containers.   
+    </p>
+
+    <p>
+    The 
+    <a href="http://www.boost.org/doc/libs/1_51_0/libs/multi_index/doc/index.html"><b>Boost.MultiIndex</b> library</a>     
+    offers the facilities of an in-memory relational database. 
+    In <b>Boost.MultiIndex</b> an <i>index</i> represents 
+    a container or a data structure. The <i>indices</i> support interfaces of 
+    STL containers, however, they are not completely STL compliant. 
+    The important restrictions are applied to update operations that can be 
+    performed only through special non-standard member functions. In addition 
+    to this, the <i>indices</i> must remain stable  after the update operations.     
+    </p>
+    
+    <p>
+    Several <i>indices</i> can be used in the class template <code>multi_index_container</code> 
+    to store a data set and to provide access to the data by different keys. 
+    <b>Boost.MultiIndex</b> offers efficient query and update operations for 
+    the stored data and alleviates the need for a custom sophisticated and error prone 
+    synchronization of <i>indices</i>.     
+    </p>
+
+    <p>
+    An augmented B+ tree represents from the user perspective a single container 
+    that has a structure more complex than a basic search tree. The augmented tree 
+    stores elements of the user data set in external nodes. In internal nodes 
+    this tree stores additional implementation specific data associated with 
+    the user data set. These additional data help extend STL facilities through 
+    the performance improvement of various algorithms. The method of multiple 
+    augmenting can be summarized as follows. A balanced tree provides efficient 
+    search operations by a key and supports STL associative containers only. 
+    The tree augmented by the counter of container elements has the extended 
+    functionality. It adds efficient access to n-th element of a container. 
+    This tree supports not only STL associative containers, but also STL sequences. 
+    Yet another augmenting by the sum of values of container element adds 
+    the efficient algorithm for the function <code>accumulate()</code>.     
+    </p>
+    
+
+    <h4>
+    Advantage of Boost.MultiIndex
+    </h4>
+
+    <p>
+    STL containers based on the augmented B+ trees obtain member functions 
+    with improved efficiency against containers using basic search trees. 
+    It is also important to note that despite multiple augmenting of the B+ trees 
+    these STL containers efficiently support search by one type of a key only. 
+    For these reasons, each variant of an STL container using an augmented B+ tree 
+    is equivalent to a single <i>index</i> of <b>Boost.MultiIndex</b>.
+    In complex applications that process a data set using several keys 
+    a container based on an augmented B+ tree should be less efficient 
+    than a <code>multi_index_container</code> with properly selected <i>indices</i>.
+    To demonstrate an example of the superiority of <b>Boost.MultiIndex</b> consider 
+    a data set of three dimensional points with coordinates <code>{x, y, z}</code>.
+    A <code>multi_index_container</code> can store the data set in a <i>sequenced 
+    index</i> and provide efficient search operations for each coordinate through 
+    three <i>ordered indices</i>. A container based on an augmented B+ tree, 
+    such as <code>multiset</code>, supports logarithmic search by one coordinate 
+    and linear search by two other coordinates.    
+    </p>
+
+
+    <h4>
+    Boost.MultiIndex emulation of STL containers
+    </h4>
+    
+    <p>
+    <b>Boost.MultiIndex</b> can 
+    <a href="http://www.boost.org/doc/libs/1_51_0/libs/multi_index/doc/tutorial/techniques.html#emulate_std_containers">
+    emulate a single STL container
+    </a>
+    , when the class template <code>multi_index_container</code> 
+    is used with one <i>index</i> only. 
+    This is a relatively simple case of the comparison of containers of two libraries. 
+    It is similar to the comparison with the <b>Boost.Container</b> library. 
+    In general, advanced data structures offer more efficient operations 
+    for user algorithms. If an algorithm supports interchangeable STL containers 
+    then performance measurements can help choose the best container. 
+    </p>
+    
+    
+    <h4>
+    Boost.MultiIndex emulation of complex data structures
+    </h4>
+    
+    <p>
+    The other interesting feature of <b>Boost.MultiIndex</b> is     
+    the emulation of complex data structures. The documentation section 
+    <a href="http://www.boost.org/doc/libs/1_51_0/libs/multi_index/doc/tutorial/basics.html#list_fast_lookup">    
+    Bidirectional list with fast look up
+    </a> 
+    discusses an example of a <code>multi_index_container</code> using 
+    a linked list through <i>sequenced index</i> and a red-black tree 
+    through <i>ordered index</i>.     
+    </p>        
+    
+
+    <p>
+    The combination of a sequence with a red-black tree is equivalent to a B+ tree 
+    that stores container elements in external nodes and keys in internal nodes. 
+    The difference is that the B+ tree stores the keys in a B-tree instead of a red-black tree. 
+    Thus, this example of the <code>multi_index_container</code> 
+    with two <i>indices</i> is equivalent to 
+    <a href="https://github.com/vstadnik/stl_ext_adv">a dynamically allocated basic search B+ tree</a>. 
+    This variant of a B+ tree supports STL associative containers with bidirectional 
+    iterators. However, unlike all the augmented B+ trees, it does not offer 
+    any extension of STL facilities. 
+    </p>
+
+    <p>
+    On the other hand, the similar combination of <i>random access index</i> with 
+    <i>ordered index</i> does not look like a good alternative to an augmented 
+    B+ tree with random access iterators. Compared to the discussed example, 
+    a <code>multi_index_container</code> with these two <i>indices</i> 
+    improves efficiency of access to data through random access iterators. 
+    However, this improvement is quite costly for algorithms that update the data set, 
+    since insertion and erasure operations in <i>random access index</i> have linear 
+    complexity against constant and logarithmic complexity of <i>sequenced</i> 
+    and <i>ordered indices</i>. Moreover, this combination of <i>indices</i> 
+    can be hardly more useful than a flat associative container of the 
+    <b>Boost.Container</b> library that offers much better locality of reference. 
+    In contrast, the augmented B+ trees provide the same update operations 
+    with logarithmic running time.     
+    </p>
+
+    <p>
+    The disadvantage of the <b>Boost.MultiIndex</b> emulation of complex data 
+    structures is that the efficiency of a <code>multi_index_container</code> 
+    operation is determined by the least efficient operation of one of its <i>indices</i>. 
+    A wrong combination of <i>indices</i> can result in a significant loss of 
+    performance of an application using such a <code>multi_index_container</code>.     
+    In order to successfully compete with a complex advanced data structure 
+    each <i>index</i> of a <code>multi_index_container</code> must provide operations 
+    at least as efficient as the matching operations of the advanced data structure. 
+    The other potential problem of the <b>Boost.MultiIndex</b> emulation is that 
+    it can require more space than a corresponding optimally designed 
+    complex data structure.     
+    </p>
+
+
+    <h4>
+    Update operations
+    </h4>
+    
+    <p>
+    <b>Boost.MultiIndex</b> imposes restrictions on update operations 
+    in order to preserve invariants of all <i>indices</i> of 
+    a <code>multi_index_container</code>. The elements of <i>indices</i> 
+    that represent counterparts of STL containers can be modified only 
+    through special non-standard member functions, such as <code>replace()</code>.     
+    </p>
+
+    <p>
+    The basic search B+ trees and B+ trees augmented with the counter of 
+    container elements do not have the problem of data invalidation. 
+    It arises only for the augmented B+ trees that support logarithmic time 
+    algorithm <code>accumulate()</code>. This fact suggests that the problem 
+    becomes more significant as the complexity of a data structure increases. 
+    The new non-standard member function 
+    <a href="bp_trees_design.html#write_oper"><code>write()</code></a> 
+    has been added to address this problem. 
+    It matches the <b>Boost.MultiIndex</b> function <code>replace()</code>.   
+    </p>
+    
+    
+    <h4>
+    User defined indices
+    </h4>
+    
+    <p>
+    The restrictions imposed on <i>indices</i> make it impossible to use 
+    <b>Boost.MultiIndex</b> with standard containers, such as <code>std::vector</code>. 
+    It is even more important that these restritions do not allow 
+    to take full advantage of many types of augmented data structures that 
+    offer significant performance benefit against basic data structures.
+    </p>
+
+    <p>
+    The <b>Boost.MultiIndex</b> documentation mentions the option of 
+    the development of user defined <i>indices</i>, although the requirements 
+    have not been specified yet. The array based B+ trees cannot be used 
+    for this purpose, since they do not remain stable after update operations. 
+    The 
+    <a href="https://github.com/vstadnik/stl_ext_adv">dynamically allocated B+ trees</a> 
+    do not have this problem and, thus, they are more suitable candidates. 
+    </p>
+
+    <p>
+    The section 
+    <a href="http://www.boost.org/doc/libs/1_51_0/libs/multi_index/doc/future_work.html">Future work</a>     
+    discusses new <i>ranked indices</i> for order-statistics trees that represent 
+    augmented red-black trees. It is not clear, however, if every new augmented 
+    data structure would require its special <i>index</i>. In theory, the standard containers 
+    can support <b>Boost.MultiIndex</b> through container adapters. This approach 
+    could be more beneficial, since it would allow using any data structure 
+    that can provide interfaces of STL containers and iterators. 
+    </p>
+    
   
   <hr>
 
@@ -644,7 +876,7 @@
 
   <p>Revised 
   <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
-  20 November, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+  02 February, 2013<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
 
   <p><i>Copyright &copy; 2011-2012</i> 
   <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>
