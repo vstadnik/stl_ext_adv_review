@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////
 //
-//          Copyright Vadim Stadnik 2012.
+//          Copyright Vadim Stadnik 2012-2013.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
@@ -25,6 +25,21 @@
 #include <boost/container/set.hpp>
 #include <boost/container/flat_set.hpp>
 #include <boost/container/stable_vector.hpp>
+
+
+//  do not link serialization library 
+#define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
+//
+//  "node compression" improves locality of reference and hence performance 
+//#define BOOST_MULTI_INDEX_DISABLE_COMPRESSED_ORDERED_INDEX_NODES
+//
+#include <boost/multi_index_container.hpp> 
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/sequenced_index.hpp>
+#include <boost/multi_index/random_access_index.hpp>
+
+
 
 //  std_ext_adv containers
 #include "bpt_sequence.hpp"
@@ -227,6 +242,49 @@ namespace test_performance
         std_accumulate ( b_stable_vector ) ; 
     }
 
+
+    using namespace boost ; 
+    using namespace boost::multi_index;
+
+    void boost_m_idx_multiset ( const size_t  sz_test ) 
+    {
+        multi_index_container<size_t, indexed_by<ordered_non_unique<identity<size_t> > > > 
+                                        mi_m_set ;  
+        advance_insert ( sz_test , "boost::m_idx::multiset" , mi_m_set ) ; 
+        std_accumulate ( mi_m_set ) ; 
+    } 
+
+
+    //  class adaptor to emulate std::list, 
+    //  for more details see Boost.MultiIndex documentation
+    template < typename T > 
+    struct mutable_value 
+    {
+        mutable_value ( const T &  _t ) : t(_t) {  } 
+        operator T&() const { return t; }
+    private:
+        mutable T   t ; 
+    } ;
+
+    void boost_m_idx_list ( const size_t  sz_test ) 
+    {
+        multi_index_container<mutable_value<size_t>, indexed_by<sequenced< > > >
+                                        mi_list ;  
+        advance_insert ( sz_test , "boost::m_idx::list" , mi_list ) ; 
+        std_accumulate ( mi_list ) ; 
+    }
+
+    void boost_m_idx_random_access ( const size_t  sz_test ) 
+    {
+    //  this container can be tested too
+    //  multi_index_container<size_t, indexed_by<random_access< > > >
+        multi_index_container<mutable_value<size_t>, indexed_by<random_access< > > >
+                                        mi_random_access ;  
+        advance_insert ( sz_test , "boost::m_idx::random_access" , mi_random_access ) ; 
+        std_accumulate ( mi_random_access ) ; 
+    }
+
+
 }   //  namespace test_performance ;
 
 
@@ -256,6 +314,10 @@ int  main ( int  argc , char*  argv[] )
     test_performance::boost_multiset      ( n_test ) ; 
     test_performance::boost_stable_vector ( n_test ) ; 
     test_performance::boost_flat_multiset ( n_test ) ; 
+
+    test_performance::boost_m_idx_multiset( n_test ) ; 
+    test_performance::boost_m_idx_list    ( n_test ) ; 
+    test_performance::boost_m_idx_random_access( n_test ) ; 
 
     return 0 ; 
 }

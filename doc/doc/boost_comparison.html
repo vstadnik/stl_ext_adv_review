@@ -744,6 +744,14 @@
     is used with one <i>index</i> only. 
     This is a relatively simple case of the comparison of containers of two libraries. 
     It is similar to the comparison with the <b>Boost.Container</b> library. 
+    The file <code>&quot;boost_performance.cpp&quot;</code> includes performance 
+    tests for STL variants of containers based on <b>Boost.MultiIndex</b> 
+    <i>indices</i>: <code>list</code> and <code>multi_set</code>. 
+    The <b>Boost.MultiIndex</b> containers perform slightly worse than 
+    the matching containers of <b>Boost.Container</b>. The maximum difference 
+    in the values of running times is about 20 percent. 
+    <b>Boost.MultiIndex</b> <i>random access index</i> shows approximately 
+    the same performance as <code>stable_vector</code> of <b>Boost.Container</b>. 
     In general, advanced data structures offer more efficient operations 
     for user algorithms. If an algorithm supports interchangeable STL containers 
     then performance measurements can help choose the best container. 
@@ -876,7 +884,7 @@
 
   <p>Revised 
   <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
-  02 February, 2013<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+  04 February, 2013<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
 
   <p><i>Copyright &copy; 2011-2012</i> 
   <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>

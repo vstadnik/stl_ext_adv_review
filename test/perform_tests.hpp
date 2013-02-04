@@ -91,6 +91,33 @@ namespace test_performance
 
 
     template < class _Ty_Seqce >
+    void test_clear 
+        (
+            const size_t        sz_test     ,
+            _Ty_Seqce &         seqce_test
+        )
+    {
+        std::vector<size_t>     vec_szt ;
+        test_std_ext_adv::fill_rand ( vec_szt , sz_test , 1 , 1 ) ;
+
+        seqce_test . clear ( ) ;
+
+        std::vector<size_t>::const_iterator     it_cur = vec_szt . begin ( ) ;
+        std::vector<size_t>::const_iterator     it_end = vec_szt . end   ( ) ;
+
+        seqce_test . insert ( seqce_test.end() , it_cur , it_end ) ;
+
+        Testing::TimerHighRes   timer  ;
+        timer . Start ( ) ;
+
+        seqce_test . clear ( ) ;
+
+        timer . Stop ( ) ;
+        timer . PrintTime ( "test clear" ) ;
+    }
+
+
+    template < class _Ty_Seqce >
     void test_sort
         (
             const size_t        sz_test     ,
