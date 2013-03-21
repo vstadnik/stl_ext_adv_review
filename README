@@ -66,6 +66,6 @@ COMPILERS
 
 - MSVC++ 9/10 (Visual Studio 2008/2010, including Express editions) ; 
 - GCC 4.5.2 (tested using MinGW) ;
-
+- GCC 4.6, GCC 4.7 using Android NDK and ADT Eclipse ; 
 
 

@@ -15,7 +15,6 @@
 #ifndef _TIMER_CHRONO_HPP
 #define _TIMER_CHRONO_HPP
 
-#include <iostream> 
 #include <sstream>
 #include <string> 
 
@@ -44,15 +43,6 @@ namespace test_performance
         void Start ( ) { start = _clock_impl::now ( ) ; } 
         void Stop  ( ) { stop  = _clock_impl::now ( ) ; }
 
-        void PrintTime ( std::string const &  info ) const 
-        {
-            std::string		str_time ; 
-            TimeToString ( info , str_time ) ; 
-            std::cout << str_time ; 
-        } 
-
-    private:
-
         double DurationMicroSec ( ) const
         {
             _duration   durn_mcsec = stop - start ; 
@@ -70,6 +60,8 @@ namespace test_performance
             str_res  = ostr_out . str ( ) ;
         } 
 
+    private:
+
         _time_point     start ; 
         _time_point     stop  ; 
     } ; 
@@ -78,4 +70,3 @@ namespace test_performance
 
 
 #endif  // _TIMER_CHRONO_HPP 
-
