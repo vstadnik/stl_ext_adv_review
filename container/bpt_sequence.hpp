@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////
 //
-//          Copyright Vadim Stadnik 2011-2012.
+//          Copyright Vadim Stadnik 2011-2013.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,8 @@
 #define _BPT_SEQUENCE_HPP
 
 #include <functional>
+//  support for _insert_dispatch() ;
+#include <limits>
 #include "bp_tree_array.hpp"
 
 
@@ -22,14 +24,14 @@ _STD_EXT_ADV_OPEN
 
 
 //
-//  class template sequence supports the union of interfaces of the C++03 
-//  sequence containers: std::list, std::deque and std::vector. 
-//  A sequence is a container adapter, its behaviour is defined by 
+//  class template sequence supports the union of interfaces of the C++03
+//  sequence containers: std::list, std::deque and std::vector.
+//  A sequence is a container adapter, its behaviour is defined by
 //  an underlying container based on a B+ tree. A sequence supports:
 //  - random access iterators;
-//  - logarithmic time insert and erase operations for a single element 
-//    anywhere within the container; 
-//  - logarithmic time splice and split operations for any ranges of 
+//  - logarithmic time insert and erase operations for a single element
+//    anywhere within the container;
+//  - logarithmic time splice and split operations for any ranges of
 //    consecutive elements and any positions in the containers involved;
 //
 template
@@ -68,18 +70,21 @@ public:
     explicit
     sequence ( const allocator_type &  alr=allocator_type() ) :
         m_contr ( key_compare(), true, false, alr ) { }
+
     explicit
     sequence ( size_type               sz  ,
                const value_type &      val =value_type() ,
                const allocator_type &  alr =allocator_type() ) :
         m_contr ( key_compare(), true, false, alr )
         { m_contr._insert_seqce_count ( m_contr.begin(), sz, val ) ; }
+
     template <class _InpIter>
     sequence ( _InpIter                pos_a ,
                _InpIter                pos_b ,
                const allocator_type &  alr = allocator_type() ) :
         m_contr ( key_compare(), true, false, alr )
-        { m_contr._insert_seqce_iter ( m_contr.begin(), pos_a, pos_b ) ; }
+        { this->insert ( begin(), pos_a, pos_b ) ; }
+
 
     sequence   ( const this_type &  that ) : m_contr ( that.m_contr ) { }
     this_type &
@@ -95,7 +100,8 @@ public:
     void        assign (_InpIter  pos_a, _InpIter  pos_b )
     {
         m_contr.clear() ;
-        m_contr._insert_seqce_iter( m_contr.begin(), pos_a, pos_b ) ;
+        typedef dispatch<std::numeric_limits<_InpIter>::is_integer> _is_integer ;
+        _insert_dispatch ( begin() , pos_a , pos_b , _is_integer() ) ;
     }
 
     allocator_type
@@ -144,7 +150,8 @@ public:
     template <class _InpIter>
     void        insert ( iterator  pos, _InpIter  pos_a, _InpIter  pos_b )
     {
-        m_contr._insert_seqce_iter( pos, pos_a, pos_b ) ;
+        typedef dispatch<std::numeric_limits<_InpIter>::is_integer> _is_integer ;
+        _insert_dispatch ( pos , pos_a , pos_b , _is_integer() ) ;
     }
     void  push_back  ( const value_type &  val ) { m_contr.push_back (val); }
     void  push_front ( const value_type &  val ) { m_contr.push_front(val); }
@@ -218,6 +225,22 @@ public:
 
 protected:
 
+    //  for details of this dispatch method refer to
+    //  M.Austern, "Generic Programming and the STL", Addison-Wesley, 1999.
+    template < bool x > struct dispatch {  } ;
+
+    template < class _InpIter >
+    void _insert_dispatch ( iterator pos , _InpIter  pos_a , _InpIter  pos_b , dispatch<true> )
+    {
+        m_contr._insert_seqce_count ( pos, static_cast<size_type>(pos_a), static_cast<value_type>(pos_b) ) ;
+    }
+
+    template < class _InpIter >
+    void _insert_dispatch ( iterator pos , _InpIter  pos_a , _InpIter  pos_b , dispatch<false> )
+    {
+        m_contr . _insert_seqce_iter ( pos , pos_a , pos_b ) ;
+    }
+
     _BPTreeType     m_contr;
 
 } ;
@@ -289,3 +312,4 @@ void swap ( SEQCE_BPT &  ctr_x , SEQCE_BPT &  ctr_y )
 _STD_EXT_ADV_CLOSE
 
 #endif  //  _BPT_SEQUENCE_HPP
+
