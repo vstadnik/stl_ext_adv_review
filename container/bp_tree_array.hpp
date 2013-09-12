@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////
 //
-//          Copyright Vadim Stadnik 2012.
+//          Copyright Vadim Stadnik 2012-2013.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
@@ -29,19 +29,19 @@ _STD_EXT_ADV_OPEN
 
 
 //
-//  class template bp_tree_array represents a general purpose container 
-//  that supports interfaces of the C++03 sequences and associative containers. 
-//  A bp_tree_array implements a partition of an array into a list of sub-arrays, 
-//  thus, the container elements are not stored in contiguous memory. 
-//  A bp_tree_array can be used to store the elements with multiple or 
-//  unique keys in the order specified by a comparison object. 
+//  class template bp_tree_array represents a general purpose container
+//  that supports interfaces of the C++03 sequences and associative containers.
+//  A bp_tree_array implements a partition of an array into a list of sub-arrays,
+//  thus, the container elements are not stored in contiguous memory.
+//  A bp_tree_array can be used to store the elements with multiple or
+//  unique keys in the order specified by a comparison object.
 //  A bp_tree_array supports:
-//  - random access iterators; 
-//  - logarithmic time search operations using keys of the container elements 
+//  - random access iterators;
+//  - logarithmic time search operations using keys of the container elements
 //    if the elements are ordered;
-//  - logarithmic time insert and erase operations for a single element 
-//    anywhere within the container; 
-//  - logarithmic time splice and split operations for any ranges of 
+//  - logarithmic time insert and erase operations for a single element
+//    anywhere within the container;
+//  - logarithmic time splice and split operations for any ranges of
 //    consecutive elements and any positions in the containers involved.
 //
 template
@@ -138,18 +138,12 @@ public:
                      m_index(ind), m_ptr(pln), m_p_cont(ctr) { }
 
     public:
-        bool operator == ( const _iter_base & it_x ) const
-                         { return m_index == it_x.m_index ; }
-        bool operator != ( const _iter_base & it_x ) const
-                         { return m_index != it_x.m_index ; }
-        bool operator <  ( const _iter_base & it_x ) const
-                         { return m_index <  it_x.m_index ; }
-        bool operator <= ( const _iter_base & it_x ) const
-                         { return m_index <= it_x.m_index ; }
-        bool operator >  ( const _iter_base & it_x ) const
-                         { return m_index >  it_x.m_index ; }
-        bool operator >= ( const _iter_base & it_x ) const
-                         { return m_index >= it_x.m_index ; }
+        bool operator == ( const _iter_base & it_x ) const { return m_index == it_x.m_index ; }
+        bool operator != ( const _iter_base & it_x ) const { return m_index != it_x.m_index ; }
+        bool operator <  ( const _iter_base & it_x ) const { return m_index <  it_x.m_index ; }
+        bool operator <= ( const _iter_base & it_x ) const { return m_index <= it_x.m_index ; }
+        bool operator >  ( const _iter_base & it_x ) const { return m_index >  it_x.m_index ; }
+        bool operator >= ( const _iter_base & it_x ) const { return m_index >= it_x.m_index ; }
 
     protected:
         bool valid_data ( ) const
@@ -278,128 +272,126 @@ public:
 
 
     template < class _Cat, class _Val, class _Diff, class _Ptr, class _Ref >
-    class _iter_base_stl : public _iter_base
+    class _iter_stl_non_const : public _iter_base
     {
     public:
         typedef _Cat        iterator_category ;
         typedef _Val        value_type        ;
         typedef _Diff       difference_type   ;
-        typedef _Diff       distance_type     ;
         typedef _Ptr        pointer           ;
         typedef _Ref        reference         ;
 
     protected:
-        _iter_base_stl ( ) : _iter_base ( ) {  }
-        _iter_base_stl ( difference_type   ind ,
-                         _NodeLightPtr     pln ,
-                         this_type const * ctr ) :
-                         _iter_base ( ind, pln, ctr ) { }
-        _iter_base_stl ( difference_type   ind ,
-                         _NodeLightPtr     pln ,
-                         this_type *       ctr ) :
-                         _iter_base ( ind, pln, ctr ) { }
+        _iter_stl_non_const ( ) : _iter_base ( ) {  }
+        _iter_stl_non_const ( difference_type   ind ,
+                              _NodeLightPtr     pln ,
+                              this_type *       ctr ) :
+                              _iter_base ( ind, pln, ctr ) { }
     } ;
-
 
     class iterator ;
     friend
     class iterator ;
-    typedef _iter_base_stl< std::random_access_iterator_tag,
-                            value_type, difference_type, pointer, reference >
-                            _iter_base_stl_alias ;
-
 
     //  random access iterator
-    class iterator : public _iter_base_stl_alias
+    class iterator : public _iter_stl_non_const< std::random_access_iterator_tag,
+                                 value_type, difference_type, pointer, reference >
     {
     friend class bp_tree_array < _Ty_Key , _Ty_Map , _Ty_Val ,
                                  _KeyOfV , _MapOfV , _Pred   , _Alloc  > ;
 
+        typedef _iter_stl_non_const< std::random_access_iterator_tag,
+                                value_type, difference_type, pointer, reference >
+                                _iter_base_stl ;
+
         iterator ( difference_type   ind ,
                    _NodeLightPtr     pln ,
                    this_type *       ctr ) :
-                   _iter_base_stl_alias ( ind, pln, ctr ) { }
+                   _iter_base_stl ( ind, pln, ctr ) { }
 
     public:
-        iterator ( ) : _iter_base_stl_alias ( ) { }
+        iterator ( ) : _iter_base_stl ( ) { }
 
-        reference   operator*  ( ) const
-                    { return _iter_base_stl_alias::m_ptr->_elem() ; }
-        pointer     operator-> ( ) const    { return (&**this) ; }
+        reference   operator*  ( ) const { return _iter_base::m_ptr->_elem() ; }
+        pointer     operator-> ( ) const { return (&**this) ; }
         reference   operator[ ]( difference_type  ind ) const
-                                            { return ( *(*this + ind) ) ; }
+                                         { return ( *(*this + ind) ) ; }
 
-        iterator &  operator ++ ( )
-                    { _iter_base_stl_alias::_increment() ; return (*this) ; }
-        iterator &  operator -- ( )
-                    { _iter_base_stl_alias::_decrement() ; return (*this) ; }
-        iterator    operator ++ ( int )
-                    { iterator tmp = *this ; ++(*this) ; return tmp ; }
-        iterator    operator -- ( int )
-                    { iterator tmp = *this ; --(*this) ; return tmp ; }
-        iterator &  operator += ( difference_type _m )
-                    { _iter_base_stl_alias::_move_idx_impl(+_m); return *this;}
-        iterator &  operator -= ( difference_type _m )
-                    { _iter_base_stl_alias::_move_idx_impl(-_m); return *this;}
-        iterator    operator +  ( difference_type _m ) const
-                    { iterator tmp = *this ; return ( tmp += _m ) ; }
-        iterator    operator -  ( difference_type _m ) const
-                    { iterator tmp = *this ; return ( tmp -= _m ) ; }
+        iterator &  operator ++ ( )      { _iter_base::_increment() ; return (*this) ; }
+        iterator &  operator -- ( )      { _iter_base::_decrement() ; return (*this) ; }
+        iterator    operator ++ ( int )  { iterator tmp = *this ; ++(*this) ; return tmp ; }
+        iterator    operator -- ( int )  { iterator tmp = *this ; --(*this) ; return tmp ; }
+        iterator &  operator += ( difference_type _m ) { _iter_base::_move_idx_impl(+_m); return *this;}
+        iterator &  operator -= ( difference_type _m ) { _iter_base::_move_idx_impl(-_m); return *this;}
+        iterator    operator +  ( difference_type _m ) const { iterator tmp = *this ; return ( tmp += _m ) ; }
+        iterator    operator -  ( difference_type _m ) const { iterator tmp = *this ; return ( tmp -= _m ) ; }
 
         difference_type operator -  ( const iterator & it_x ) const
-                    { return ( _iter_base_stl_alias::m_index -
-                               it_x._iter_base_stl_alias::m_index ) ; }
+                    { return ( _iter_base::m_index - it_x._iter_base::m_index ) ; }
     } ;
 
+
+    template < class _Cat, class _Val, class _Diff, class _Ptr, class _Ref >
+    class _iter_stl_const : public _iter_base
+    {
+    public:
+        typedef _Cat        iterator_category ;
+        typedef _Val        value_type        ;
+        typedef _Diff       difference_type   ;
+        typedef _Ptr        pointer           ;
+        typedef _Ref        reference         ;
+
+    protected:
+        _iter_stl_const ( ) : _iter_base ( ) {  }
+        _iter_stl_const ( difference_type   ind ,
+                          _NodeLightPtr     pln ,
+                          this_type const * ctr ) :
+                          _iter_base ( ind, pln, ctr ) { }
+    } ;
 
     class const_iterator ;
     friend
     class const_iterator ;
 
     //  constant random access iterator
-    class const_iterator : public _iter_base_stl_alias
+    class const_iterator : public _iter_stl_const< std::random_access_iterator_tag,
+                                  value_type, difference_type, const_pointer, const_reference >
     {
     friend class bp_tree_array < _Ty_Key , _Ty_Map , _Ty_Val ,
                                  _KeyOfV , _MapOfV , _Pred   , _Alloc  > ;
 
+        typedef _iter_stl_const< std::random_access_iterator_tag,
+                                value_type, difference_type, const_pointer, const_reference >
+                                _iter_base_stl ;
+
         const_iterator ( difference_type   ind ,
                          _NodeLightPtr     pln ,
                          this_type const * ctr ) :
-                         _iter_base_stl_alias ( ind, pln, ctr ) { }
+                         _iter_base_stl ( ind, pln, ctr ) { }
 
     public:
-        const_iterator ( ) : _iter_base_stl_alias ( ) { }
+        const_iterator ( ) : _iter_base_stl ( ) { }
         const_iterator ( const iterator &  iter ) :
-            _iter_base_stl_alias ( iter._iter_base_stl_alias::m_index  ,
-                                   iter._iter_base_stl_alias::m_ptr    ,
-                                   iter._iter_base_stl_alias::m_p_cont ) { }
+            _iter_base_stl ( iter._iter_base::m_index  ,
+                             iter._iter_base::m_ptr    ,
+                             iter._iter_base::m_p_cont ) { }
 
-        const_reference     operator*  ( ) const
-                            { return _iter_base_stl_alias::m_ptr->_elem() ; }
-        const_pointer       operator-> ( ) const    { return ( &**this ) ; }
-        const_reference     operator[ ]( difference_type  ind ) const
-                                                    { return (*(*this+ind)) ; }
+        const_reference   operator*  ( ) const { return _iter_base::m_ptr->_elem() ; }
+        const_pointer     operator-> ( ) const { return ( &**this ) ; }
+        const_reference   operator[ ]( difference_type  ind ) const
+                                               { return (*(*this+ind)) ; }
 
-        const_iterator &    operator ++ ( )
-                    { _iter_base_stl_alias::_increment() ; return (*this) ; }
-        const_iterator &    operator -- ( )
-                    { _iter_base_stl_alias::_decrement() ; return (*this) ; }
-        const_iterator      operator ++ ( int )
-                    { const_iterator tmp = *this ; ++(*this) ; return tmp ; }
-        const_iterator      operator -- ( int )
-                    { const_iterator tmp = *this ; --(*this) ; return tmp ; }
-        const_iterator &    operator += ( difference_type _m )
-                    { _iter_base_stl_alias::_move_idx_impl(+_m); return *this ;}
-        const_iterator &    operator -= ( difference_type _m )
-                    { _iter_base_stl_alias::_move_idx_impl(-_m); return *this ;}
-        const_iterator      operator +  ( difference_type _m ) const
-                    { const_iterator tmp = *this ; return ( tmp += _m ) ; }
-        const_iterator      operator -  ( difference_type _m ) const
-                    { const_iterator tmp = *this ; return ( tmp -= _m ) ; }
+        const_iterator &  operator ++ ( )      { _iter_base::_increment() ; return (*this) ; }
+        const_iterator &  operator -- ( )      { _iter_base::_decrement() ; return (*this) ; }
+        const_iterator    operator ++ ( int )  { const_iterator tmp = *this ; ++(*this) ; return tmp ; }
+        const_iterator    operator -- ( int )  { const_iterator tmp = *this ; --(*this) ; return tmp ; }
+        const_iterator &  operator += ( difference_type _m ) { _iter_base::_move_idx_impl(+_m); return *this ;}
+        const_iterator &  operator -= ( difference_type _m ) { _iter_base::_move_idx_impl(-_m); return *this ;}
+        const_iterator    operator +  ( difference_type _m ) const { const_iterator tmp = *this ; return ( tmp += _m ) ; }
+        const_iterator    operator -  ( difference_type _m ) const { const_iterator tmp = *this ; return ( tmp -= _m ) ; }
 
-        difference_type     operator -  ( const const_iterator & cit_x ) const
-                    { return ( _iter_base_stl_alias::m_index -
-                               cit_x._iter_base_stl_alias::m_index ) ; }
+        difference_type   operator -  ( const const_iterator & cit_x ) const
+                          { return ( _iter_base::m_index - cit_x._iter_base::m_index ) ; }
     } ;
 
 
@@ -483,7 +475,7 @@ public:
                 _remove_if ( pr_equal ) ;
             }
     template < class _PredRem >
-    void    remove_if ( _PredRem  pred ) { _remove_if ( pred ) ; }
+    void    remove_if ( _PredRem  pred ) { _remove_if   ( pred ) ; }
 
     void    unique ( ) { _unique_pred ( _equivalence<value_type>() ) ; }
     template < class _PredRem >
@@ -531,13 +523,13 @@ public:
 
     void        swap  ( this_type &  ctr_x ) ;
 
-    void        write_shallow ( iterator             pos     ,
-                                const mapped_type &  val_new ) ;
-    iterator    write_deep    ( iterator             pos     ,
-                                const value_type &   val_new ) ;
+    void        write_shallow ( iterator             pos      ,
+                                const mapped_type &  val_new  ) ;
+    iterator    write_deep    ( iterator             pos      ,
+                                const value_type &   val_new  ) ;
 
     //  associative containers observers
-    _Pred       key_comp ( ) const { return m_k_comp  ; }
+    _Pred       key_comp ( ) const { return m_k_comp ; }
 
     //  associative containers operations
     iterator        find        ( const _Ty_Key &  key_x ) ;
@@ -584,8 +576,6 @@ protected:
                                            _NodeLightPtr       p_lt_pos ,
                                            const value_type &  val_x    ) ;
     _NodeHeavyPtr   _erase_block         ( _NodeLightPtr       p_lt_pos ) ;
-    void            _construct           ( pointer             ptr      ,
-                                           const value_type &  val      ) ;
 
    _NodeHeavyPtr    _create_node_heavy ( _NodeLightPtr     p_light  ) ;
     void            _delete_node_heavy ( _NodeHeavyPtr &   p_node   ) ;
@@ -712,6 +702,19 @@ protected:
                                    iterator         pos_a   ,
                                    iterator         pos_b   ) ;
 
+    //  support for exception handling
+    void _increase_parent_counts ( _NodeHeavyPtr    p_parent ,
+                                   const size_type  sub_sz   ) ;
+    void _decrease_parent_counts ( _NodeHeavyPtr    p_parent ,
+                                   const size_type  sub_sz   ) ;
+    void _destroy_block_count    ( _NodeHeavyPtr    p_parent ,
+                                   _NodeLightPtr    p_light  ,
+                                   size_type &      count_lt ) ;
+    void _destroy_block_exclude  ( _NodeHeavyPtr    p_parent     ,
+                                   _NodeLightPtr    p_lt_exclude ,
+                                   difference_type  n_destroy  ) ;
+    size_type   _count_children  ( _NodeHeavyPtr    p_node     ) const ;
+
     template<class _InpIter>
     void _push_back_array ( _InpIter  pos_a, _InpIter  pos_b )
     {
@@ -723,25 +726,34 @@ protected:
 
         while ( pos_a != pos_b )
         {
-            p_elem = &(p_lt_cur->elem) ;
-            _construct ( p_elem , *pos_a ) ;
-            p_lt_cur->p_heavy_predr = 0 ;
-            ++m_size_light ;
-            ++cnt_elem ;
-            ++p_lt_cur ;
-            ++pos_a ;
+            try
+            {
+                for ( ; (pos_a!=pos_b) && (cnt_elem<sz_fill) ; ++pos_a, ++p_lt_cur )
+                {
+                    p_elem = &(p_lt_cur->elem) ;
+                    m_allr_ty_val . construct ( p_elem , *pos_a ) ;
+                    p_lt_cur->p_heavy_predr = 0 ;
+                    ++cnt_elem ;
+                }
+
+                m_size_light += cnt_elem ;
+            }
+            catch ( ... )
+            {
+                _NodeHeavyPtr   p_parent = _bottom_end()->p_prev ;
+                _increase_parent_counts ( p_parent , cnt_elem ) ;
+                m_size_light += cnt_elem ;
+                throw ;
+            }
 
             if ( pos_a == pos_b )
                 break ;
 
-            if ( cnt_elem == sz_fill )
-            {
-                _insert_b_tree_count ( _bottom_end()->p_prev , cnt_elem ) ;
-                _insert_link_node_botm ( _bottom_end() ) ;
-                ++cnt_node ;
-                cnt_elem = 0 ;
-                p_lt_cur = _bottom_end()->p_prev->_get_node_light() ;
-            }
+            _insert_b_tree_count ( _bottom_end()->p_prev , cnt_elem ) ;
+            _insert_link_node_botm ( _bottom_end() ) ;
+            ++cnt_node ;
+            cnt_elem = 0 ;
+            p_lt_cur = _bottom_end()->p_prev->_get_node_light() ;
         }
 
         if ( cnt_node == 1 )
@@ -1084,7 +1096,7 @@ protected:
 
     static size_type _min_degree_int() { return 8 ; }
     static size_type _max_degree_int() { return 2*_min_degree_int() ; }
-    static size_type _min_degree_ext() { return 64 ; }
+    static size_type _min_degree_ext() { return 64; }
     static size_type _max_degree_ext() { return 2*_min_degree_ext() ; }
 
 } ;
@@ -1223,16 +1235,29 @@ BP_TREE_TY::_insert_block ( _NodeHeavyPtr       p_parent ,
 
     p_lt_cur->p_heavy_predr = 0 ;
 
-    while ( p_lt_cur != p_lt_pos )
+    try
     {
-        _construct ( p_elem , (p_lt_cur-1)->_elem() ) ;
-        --p_lt_cur ;
-        p_elem = &(p_lt_cur->elem) ;
-        m_allr_ty_val . destroy ( p_elem ) ;
-    }
+        while ( p_lt_cur != p_lt_pos )
+        {
+            m_allr_ty_val . construct ( p_elem , (p_lt_cur-1)->_elem() ) ;
+            --p_lt_cur ;
+            p_elem = &(p_lt_cur->elem) ;
+            m_allr_ty_val . destroy ( p_elem ) ;
+        }
 
-    _construct ( p_elem , val_x ) ;
-    ++m_size_light ;
+        m_allr_ty_val . construct ( p_elem , val_x ) ;
+        ++m_size_light ;
+    }
+    catch ( ... )
+    {
+        _destroy_block_exclude  ( p_parent , p_lt_pos , n_elems+1 ) ;
+
+        size_type       subsz = p_parent->m_subsz ;
+        _decrease_parent_counts ( p_parent , subsz ) ;
+        m_size_light -= subsz ;
+
+        throw ;
+    }
 }
 
 
@@ -1243,13 +1268,30 @@ BP_TREE_TY::_erase_block ( _NodeLightPtr  p_lt_pos )
     _NodeHeavyPtr   p_parent = 0 ;
     pointer         p_elem   = 0 ;
 
-    ++p_lt_pos ;
-    while ( p_lt_pos->p_heavy_predr == 0 )
+    try
     {
-        p_elem = &( (p_lt_pos-1)->_elem() ) ;
-        m_allr_ty_val . destroy ( p_elem ) ;
-        _construct ( p_elem , p_lt_pos->_elem() ) ;
         ++p_lt_pos ;
+        while ( p_lt_pos->p_heavy_predr == 0 )
+        {
+            p_elem = &( (p_lt_pos-1)->_elem() ) ;
+            m_allr_ty_val . destroy ( p_elem ) ;
+            m_allr_ty_val . construct ( p_elem , p_lt_pos->_elem() ) ;
+            ++p_lt_pos ;
+        }
+    }
+    catch ( ... )
+    {
+        p_parent = _parent ( p_lt_pos ) ;
+
+        size_type           subsz = _count_children (  p_parent ) ;
+        p_parent->m_subsz = subsz ;
+        difference_type     n_elems = difference_type ( p_parent->m_subsz ) ;
+
+        _destroy_block_exclude  ( p_parent , p_lt_pos , n_elems ) ;
+        _decrease_parent_counts ( p_parent , subsz ) ;
+        m_size_light -= subsz ;
+
+        throw ;
     }
 
     p_parent = p_lt_pos->p_heavy_predr ;
@@ -1304,17 +1346,83 @@ void BP_TREE_TY::_delete_block_end ( _NodeLightPtr  p_lt_elem )
 
 
 TEMPL_DECL
-void BP_TREE_TY::_construct ( pointer  ptr , const value_type &  val )
+void BP_TREE_TY::_increase_parent_counts ( _NodeHeavyPtr    p_parent ,
+                                           const size_type  sub_sz   )
 {
-    try
+    _NodeHeavyPtr   p_tmp = p_parent ;
+
+    while ( p_tmp != 0 )
     {
-        m_allr_ty_val . construct ( ptr , val ) ;
+        p_tmp->m_subsz += sub_sz  ;
+        p_tmp = p_tmp->p_predr ;
     }
-    catch ( ... )
+}
+
+TEMPL_DECL
+void BP_TREE_TY::_decrease_parent_counts ( _NodeHeavyPtr    p_parent ,
+                                           const size_type  sub_sz   )
+{
+    _NodeHeavyPtr   p_tmp = p_parent ;
+
+    while ( p_tmp != 0 )
     {
-        m_allr_ty_val . destroy ( ptr ) ;
-        throw ;
+        p_tmp->m_subsz -= sub_sz  ;
+        p_tmp = p_tmp->p_predr ;
     }
+}
+
+TEMPL_DECL
+void BP_TREE_TY::_destroy_block_count ( _NodeHeavyPtr  p_parent ,
+                                        _NodeLightPtr  p_light  ,
+                                        size_type &    count_lt )
+{
+    pointer     p_elem = 0 ;
+
+    while ( p_light->p_heavy_predr == 0 )
+    {
+        p_elem = &(p_light->elem) ;
+        m_allr_ty_val . destroy ( p_elem ) ;
+        p_light->p_heavy_predr = p_parent ;
+        ++p_light  ;
+        ++count_lt ;
+    }
+}
+
+TEMPL_DECL
+void BP_TREE_TY::_destroy_block_exclude ( _NodeHeavyPtr    p_parent     ,
+                                          _NodeLightPtr    p_lt_exclude ,
+                                          difference_type  n_destroy    )
+{
+    pointer         p_elem = 0 ;
+    _NodeLightPtr   p_lt_a = p_parent->_get_node_light() ;
+    _NodeLightPtr   p_lt_b = p_lt_a + n_destroy ;
+
+    for ( ; p_lt_a != p_lt_b ; ++p_lt_a )
+    {
+        if ( p_lt_a != p_lt_exclude )
+        {
+            p_elem = &(p_lt_a->elem) ;
+            m_allr_ty_val . destroy ( p_elem ) ;
+        }
+
+        p_lt_a->p_heavy_predr = p_parent ;
+    }
+}
+
+TEMPL_DECL
+typename BP_TREE_TY::size_type
+BP_TREE_TY::_count_children ( _NodeHeavyPtr  p_node ) const
+{
+    size_type       sz_res   = 0 ;
+    _NodeLightPtr   p_lt_pos = p_node->_get_node_light() ;
+
+    while ( p_lt_pos->p_heavy_predr == 0 )
+    {
+        ++sz_res ;
+        ++p_lt_pos ;
+    }
+
+    return sz_res ;
 }
 
 
@@ -1376,7 +1484,15 @@ BP_TREE_TY::bp_tree_array ( const BP_TREE_TY &  that ) :
     m_ordered         ( that . m_ordered )
 {
     _init ( ) ;
-    _copy ( that ) ;
+    try
+    {
+        _copy ( that ) ;
+    }
+    catch ( ... )
+    {
+        _destroy ( ) ;
+        throw ;
+    }
 }
 
 
@@ -1407,14 +1523,45 @@ TEMPL_DECL
 void BP_TREE_TY::_init ( )
 {
     _create_head_heavy ( ) ;
-    _insert_top_level  ( ) ;
+
+    try
+    {
+        _insert_top_level ( ) ;
+    }
+    catch ( ... )
+    {
+        _delete_node_heavy ( m_p_head_heavy ) ;
+        throw ;
+    }
 
     _NodeHeavyPtr   p_btm_end = _bottom_end() ;
-    _NodeLightPtr   p_lt_end  = _create_block_end ( p_btm_end ) ;
+    _NodeLightPtr   p_lt_end  = 0 ;
+
+    try
+    {
+        p_lt_end = _create_block_end ( p_btm_end ) ;
+    }
+    catch ( ... )
+    {
+        _delete_node_heavy ( m_p_head_heavy->p_succr ) ;
+        _delete_node_heavy ( m_p_head_heavy ) ;
+        throw ;
+    }
+
     p_btm_end     ->_set_node_light ( p_lt_end ) ;
     m_p_head_heavy->_set_node_light ( p_lt_end ) ;
 
-    _insert_heavy_node_botm ( p_btm_end ) ;
+    try
+    {
+        _insert_heavy_node_botm ( p_btm_end ) ;
+    }
+    catch ( ... )
+    {
+        _delete_block_end  ( m_p_head_heavy->p_succr->_get_node_light() ) ;
+        _delete_node_heavy ( m_p_head_heavy->p_succr ) ;
+        _delete_node_heavy ( m_p_head_heavy ) ;
+        throw ;
+    }
 }
 
 
@@ -1447,8 +1594,12 @@ void BP_TREE_TY::_destroy ( )
     _clear ( ) ;
 
     _NodeHeavyPtr   p_cur = _bottom_begin ( ) ;
-    _delete_block_shallow ( p_cur ) ;
-    _erase_heavy_node     ( p_cur ) ;
+
+    if ( p_cur != _bottom_end() )
+    {
+        _delete_block_shallow ( p_cur ) ;
+        _erase_heavy_node     ( p_cur ) ;
+    }
 
     p_cur = _bottom_end ( ) ;
     _delete_block_end ( p_cur->_get_node_light() ) ;
@@ -1493,7 +1644,18 @@ void BP_TREE_TY::_insert_heavy_node_botm ( _NodeHeavyPtr  p_posn )
     _insert_heavy_node ( p_posn , 0 ) ;
 
     _NodeHeavyPtr   p_btm_new = p_posn->p_prev ;
-    _NodeLightPtr   p_lt_0    = _create_block ( p_btm_new , 0 ) ;
+    _NodeLightPtr   p_lt_0    = 0 ;
+
+    try
+    {
+        p_lt_0 = _create_block ( p_btm_new , 0 ) ;
+    }
+    catch ( ... )
+    {
+        _erase_heavy_node ( p_btm_new ) ;
+        throw ;
+    }
+
     p_btm_new->_set_node_light ( p_lt_0 ) ;
 }
 
@@ -1554,19 +1716,37 @@ void BP_TREE_TY::_split_block ( _NodeHeavyPtr   p_parent     ,
                      difference_type( sz_left ) ;
     }
 
-    _insert_link_node_botm ( p_parent->p_next ) ;
+    _insert_link_node_botm (  p_parent->p_next ) ;
 
-    _NodeHeavyPtr   p_par_new      = p_parent->p_next ;
-    _NodeLightPtr   p_lt_cur_left  = p_lt_left_0 + difference_type( sz_left ) ;
-    _NodeLightPtr   p_lt_cur_right = p_par_new->_get_node_light() ;
-    for ( size_type i = 0 ; i < sz_right ; ++i, ++p_lt_cur_left, ++p_lt_cur_right )
+    _NodeHeavyPtr   p_par_new  = p_parent->p_next ;
+    _NodeLightPtr   p_lt_left  = p_lt_left_0 + difference_type( sz_left ) ;
+    _NodeLightPtr   p_lt_right = p_par_new->_get_node_light() ;
+    size_type       i_moved    = 0 ;
+
+    try
     {
-        p_elem = &(p_lt_cur_right->elem) ;
-        _construct ( p_elem , p_lt_cur_left->_elem() ) ;
-        p_lt_cur_right->p_heavy_predr = 0 ;
-        p_elem = &(p_lt_cur_left->elem) ;
-        m_allr_ty_val . destroy ( p_elem ) ;
-        p_lt_cur_left->p_heavy_predr = p_parent ;
+        for ( i_moved = 0 ; i_moved < sz_right ; ++i_moved, ++p_lt_left, ++p_lt_right )
+        {
+            p_elem = &(p_lt_right->elem) ;
+            m_allr_ty_val . construct ( p_elem , p_lt_left->_elem() ) ;
+            p_lt_right->p_heavy_predr = 0 ;
+            p_elem = &(p_lt_left->elem) ;
+            m_allr_ty_val . destroy ( p_elem ) ;
+            p_lt_left->p_heavy_predr = p_parent ;
+        }
+    }
+    catch ( ... )
+    {
+        size_type       sub_sz_left = i_moved ;
+        _destroy_block_count ( p_parent , p_lt_left , sub_sz_left ) ;
+
+        _decrease_parent_counts ( p_parent , sub_sz_left ) ;
+        m_size_light -= sub_sz_left ;
+
+        _increase_parent_counts ( p_par_new , i_moved ) ;
+        m_size_light += i_moved ;
+
+        throw ;
     }
 
     p_parent ->m_subsz = sz_left  ;
@@ -1574,7 +1754,7 @@ void BP_TREE_TY::_split_block ( _NodeHeavyPtr   p_parent     ,
 
     if ( dist_right >= 0 )
     {
-        p_lt_pos_upd   = p_par_new->_get_node_light() + dist_right ;
+        p_lt_pos_upd = p_par_new->_get_node_light() + dist_right ;
     }
 }
 
@@ -1593,17 +1773,34 @@ void BP_TREE_TY::_split_block_unbalanced
     _NodeLightPtr   p_lt_left  = p_lt_pos ;
     _NodeLightPtr   p_lt_right = p_par_new->_get_node_light() ;
     size_type       sub_sz     = 0 ;
-    while ( p_lt_left->p_heavy_predr == 0 )
+
+    try
     {
-        p_elem = &(p_lt_right->elem) ;
-        _construct ( p_elem , p_lt_left->_elem() ) ;
-        p_lt_right->p_heavy_predr = 0 ;
-        p_elem = &(p_lt_left->elem) ;
-        m_allr_ty_val . destroy ( p_elem ) ;
-        p_lt_left->p_heavy_predr = p_parent ;
-        ++sub_sz ;
-        ++p_lt_left  ;
-        ++p_lt_right ;
+        while ( p_lt_left->p_heavy_predr == 0 )
+        {
+            p_elem = &(p_lt_right->elem) ;
+            m_allr_ty_val . construct ( p_elem , p_lt_left->_elem() ) ;
+            p_lt_right->p_heavy_predr = 0 ;
+            p_elem = &(p_lt_left->elem) ;
+            m_allr_ty_val . destroy ( p_elem ) ;
+            p_lt_left->p_heavy_predr = p_parent ;
+            ++sub_sz ;
+            ++p_lt_left  ;
+            ++p_lt_right ;
+        }
+    }
+    catch ( ... )
+    {
+        size_type       sub_sz_left = sub_sz ;
+        _destroy_block_count ( p_parent , p_lt_left , sub_sz_left ) ;
+
+        _decrease_parent_counts ( p_parent , sub_sz_left ) ;
+        m_size_light -= sub_sz_left ;
+
+        _increase_parent_counts ( p_par_new , sub_sz ) ;
+        m_size_light += sub_sz ;
+
+        throw ;
     }
 
     p_parent ->m_subsz -= sub_sz ;
@@ -1636,7 +1833,16 @@ void BP_TREE_TY::_increase_tree_height ( )
     _NodeLightPtr   p_lt_beg  = p_top_beg->_get_node_light() ;
 
     _insert_top_level  ( ) ;
-    _insert_heavy_node ( m_p_head_heavy->p_succr, p_lt_beg ) ;
+
+    try
+    {
+        _insert_heavy_node ( m_p_head_heavy->p_succr, p_lt_beg ) ;
+    }
+    catch ( ... )
+    {
+        _erase_top_level ( ) ;
+        throw ;
+    }
 
     _NodeHeavyPtr   p_new_top_beg = _top_begin() ;
     p_new_top_beg->p_succr = p_top_beg ;
@@ -1919,6 +2125,9 @@ void BP_TREE_TY::_clear_botm_level ( )
     _NodeHeavyPtr   p_cur  = p_end->p_next ;
     _NodeHeavyPtr   p_temp = 0 ;
 
+    if ( p_cur == p_end )
+        return ;
+
     while ( p_cur->p_next != p_end )
     {
         p_temp = p_cur->p_next ;
@@ -1950,7 +2159,6 @@ void BP_TREE_TY::_merge_block
     _NodeHeavyPtr       p_left      = p_parent ;
     _NodeHeavyPtr       p_right     = p_left->p_next ;
     difference_type     n_left      = difference_type ( p_left ->m_subsz ) ;
-    difference_type     n_right     = difference_type ( p_right->m_subsz ) ;
     _NodeLightPtr       p_lt_0_left = p_left ->_get_node_light() ;
     _NodeLightPtr       p_lt_0_right= p_right->_get_node_light() ;
     _NodeLightPtr       p_lt_n_left = p_lt_0_left  + n_left  ;
@@ -1960,18 +2168,38 @@ void BP_TREE_TY::_merge_block
         dist_upd = p_lt_res_upd - p_lt_0_right ;
     }
 
-    pointer               p_elem   = 0 ;
-    _NodeLightPtr         p_lt_i_L = p_lt_n_left  ;
-    _NodeLightPtr         p_lt_i_R = p_lt_0_right ;
-    for ( difference_type i = 0 ; i < n_right ; ++i, ++p_lt_i_L, ++p_lt_i_R )
+    pointer             p_elem     = 0 ;
+    _NodeLightPtr       p_lt_left  = p_lt_n_left  ;
+    _NodeLightPtr       p_lt_right = p_lt_0_right ;
+    size_type           sz_right   = p_right->m_subsz ;
+    size_type           i_moved    = 0 ;
+
+    try
     {
-        p_elem = &(p_lt_i_L->elem) ;
-        _construct ( p_elem , p_lt_i_R->_elem() ) ;
-        p_elem = &(p_lt_i_R->_elem()) ;
-        m_allr_ty_val . destroy ( p_elem ) ;
-        p_lt_i_L->p_heavy_predr = 0 ;
-        p_lt_i_R->p_heavy_predr = p_right ;
+        for ( i_moved = 0 ; i_moved < sz_right ; ++i_moved, ++p_lt_left, ++p_lt_right )
+        {
+            p_elem = &(p_lt_left->elem) ;
+            m_allr_ty_val . construct ( p_elem , p_lt_right->_elem() ) ;
+            p_elem = &(p_lt_right->_elem()) ;
+            m_allr_ty_val . destroy ( p_elem ) ;
+            p_lt_left ->p_heavy_predr = 0 ;
+            p_lt_right->p_heavy_predr = p_right ;
+        }
     }
+    catch ( ... )
+    {
+        size_type       sub_sz_right = i_moved ;
+        _destroy_block_count ( p_right , p_lt_right , sub_sz_right ) ;
+
+        _decrease_parent_counts ( p_right , sub_sz_right ) ;
+        m_size_light -= sub_sz_right ;
+
+        _increase_parent_counts ( p_left , i_moved ) ;
+        m_size_light += i_moved ;
+
+        throw ;
+    }
+
 
     if ( dist_upd >= 0 )
     {
@@ -2602,13 +2830,24 @@ void BP_TREE_TY::_fill_value_count ( size_type           count ,
     _NodeHeavyPtr   p_parent = _bottom_end()->p_prev ;
     _NodeLightPtr   p_lt_cur = p_parent->_get_node_light() ;
     pointer         p_elem   = 0 ;
+    size_type       k = 0 ;
 
-    for ( size_type k = 0 ; k < count ; ++k, ++p_lt_cur )
+    try
     {
-        p_elem = &(p_lt_cur->elem) ;
-        _construct ( p_elem , val ) ;
-        p_lt_cur->p_heavy_predr = 0 ;
+        for ( k = 0 ; k < count ; ++k, ++p_lt_cur )
+        {
+            p_elem = &(p_lt_cur->elem) ;
+            m_allr_ty_val . construct ( p_elem , val ) ;
+            p_lt_cur->p_heavy_predr = 0 ;
+        }
     }
+    catch ( ... )
+    {
+        _increase_parent_counts ( p_parent , k ) ;
+        m_size_light += k ;
+        throw ;
+    }
+
     m_size_light += count ;
 }
 
@@ -3407,6 +3646,18 @@ void BP_TREE_TY::_splice_tree ( BP_TREE_TY &  that )
         p_parent_up = 0 ;
     }
 
+    this->m_size_light = size_a ;
+    that. m_size_light = size_b ;
+
+    for ( i = 1 ; i < min_n_lev ; ++i )
+        that._erase_top_level() ;
+
+    _NodeHeavyPtr   p_btm_end_b = that._bottom_end() ;
+    if ( p_btm_end_b == p_btm_end_b->p_prev )
+    {
+        that._insert_heavy_node_botm ( p_btm_end_b ) ;
+    }
+
     if ( p_left )
     {
         _NodeHeavyPtr   p_mid = p_left->p_next  ;
@@ -3426,18 +3677,6 @@ void BP_TREE_TY::_splice_tree ( BP_TREE_TY &  that )
             _balance_external ( p_left , p_lt_upd ) ;
         }
     }
-
-    for ( i = 1 ; i < min_n_lev ; ++i )
-        that._erase_top_level() ;
-
-    _NodeHeavyPtr   p_btm_end_b = that._bottom_end() ;
-    if ( p_btm_end_b == p_btm_end_b->p_prev )
-    {
-        that._insert_heavy_node_botm ( p_btm_end_b ) ;
-    }
-
-    this->m_size_light = size_a ;
-    that. m_size_light = size_b ;
 
     _insert_b_tree_heavy_node ( p_parent    ,
                                 p_parent_up ) ;
@@ -3509,13 +3748,16 @@ void BP_TREE_TY::_split_tree
     _delete_block_deep ( p_last_b ) ;
     _erase_heavy_node  ( p_last_b ) ;
 
-    p_end_a = this->_bottom_end() ;
-    for ( i = 0 ; i < n_levels ; ++i , p_end_a=p_end_a->p_predr )
+    for ( i = 1 ; i < n_levels ; ++i )
     {
-        if ( i > 0 )
-            other._insert_top_level() ;
+        other._insert_top_level() ;
+    }
 
-        p_end_b = other._top_end() ;
+    p_end_a = this->_bottom_end() ;
+    p_end_b = other._bottom_end() ;
+    for ( i = 0 ; i < n_levels ; ++i , p_end_a=p_end_a->p_predr ,
+                                       p_end_b=p_end_b->p_predr )
+    {
         p_end_a->p_next->p_prev = p_end_b ;
         p_end_b->p_next         = p_end_a->p_next ;
         p_end_b->p_prev         = p_end_a ;
@@ -3626,3 +3868,4 @@ void BP_TREE_TY::_restore_balance
 _STD_EXT_ADV_CLOSE
 
 #endif  //  _BP_TREE_ARRAY_HPP
+
