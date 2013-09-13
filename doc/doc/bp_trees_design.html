@@ -49,6 +49,7 @@
     <dd class="dd_f1"><a class="link_under" href="#write_oper">Write operations</a></dd>
     <dd class="dd_f1"><a class="link_under" href="#enh_alloc">Array based B+ trees as enhanced allocators</a></dd> 
     <dd class="dd_f1"><a class="link_under" href="#main_diff">Main difference between dynamically allocated and array based B+ trees</a></dd> 
+    <dd class="dd_f1"><a class="link_under" href="#except_handl">Exception handling</a></dd> 
   </dl>
 </div>
 <br>
@@ -294,21 +295,21 @@
     
     <p>
     In every augmented B+ tree that supports random access iterators 
-    an internal node contains a counter of external nodes 
+    an internal node contains a count of external nodes 
     with user elements stored in a container. 
     For the deepest level of internal nodes this parameter represents 
     the number of children in one group of external nodes. 
     For internal nodes in all other levels the value of this parameter 
-    in a parent node is equal to the sum of counters stored in its children. 
+    in a parent node is equal to the sum of counts stored in its children. 
     An algorithm can efficiently obtain and update 
-    these counters using the level-linked structure of the tree. 
+    these counts using the level-linked structure of the tree. 
     </p>
     
     <p>
-    The values of the counters of the container elements are independent of 
+    The values of the counts of the container elements are independent of 
     specific user and implementation data stored in external and internal nodes of the tree. 
     These values reflect only the structural relationships between the nodes of the tree. 
-    This is why the counters data along with the connectivity of nodes can be regarded as 
+    This is why the count data along with the connectivity of nodes can be regarded as 
     an independent substructure of indices. 
     The following figure shows the structure of indices of an array based B+ tree.     
     </p>
@@ -331,7 +332,7 @@
                 edges, arrows - directed child-parent edges. 
                 The deepest level of the B+ tree implements a partition of the array into 
                 a list of sub-arrays. Values in internal nodes of the B+ tree represent 
-                counters of elements. Empty cells in sub-arrays of external nodes do not 
+                counts of elements. Empty cells in sub-arrays of external nodes do not 
                 store container elements. They are reserved for new elements to be 
                 inserted into the tree. The dashed lines connect first elements in sub-arrays of 
                 external nodes of the tree with corresponding elements in the array. 
@@ -667,6 +668,88 @@
     </p>
     
 
+    <a name="except_handl"></a>
+    <h4 class="h4_f1">
+    Exception handling
+    </h4>
+    
+    <p>    
+    The augmented B+ trees and STL container adapters of the namespace <code>std_ext_adv</code> 
+    are optimized for performance rather than for exception safety. These B+ trees use 
+    both arrays and dynamically allocated B-trees. The complexity of these data structures 
+    makes exception handling for these B+ trees more difficult than for basic linear data structures. 
+    For these reasons the augmented B+ trees and variants of STL containers offer basic no-leak exception safety:  
+    </p>
+
+    <ul>
+    <li>a container can be safely destroyed. 
+    <li>any allocated memory is freed. 
+    <li>basic structural invariants are maintained. 
+    <li>invariants associated with augmented data may be violated. 
+    </ul>
+
+    <p>
+    Exception handling implemented in the augmented B+ trees and STL containers protects 
+    user algorithms against memory allocation errors and against exceptions thrown by 
+    copy and assignment operations on container elements. This exception safety guarantee 
+    assumes that a user defined type does not leave container elements in invalid states 
+    and its destructor does not throw exceptions.
+    </p>
+
+    <p>
+    The effect of these exceptions on the structure and invariants of these B+ trees 
+    is specific to an operation. In the worst case, one exception can make unbalanced one or 
+    two groups of children nodes and in addition to this it can make invalid augmented data 
+    stored in a number of internal nodes: counts and sums of container elements.
+    </p>
+
+    <p>
+    In the current implementation of these B+ trees the balance cannot be safely restored. 
+    This algorithm allocates resources and moves container elements from one array to another 
+    using the copy constructor of the element type. Such operations cannot be used for 
+    exception handling, since they may throw an exception. Normally, to continue processing 
+    it is sufficient to leave the affected groups of children nodes in their last valid states. 
+    However, in some special cases for groups of external nodes stored in arrays 
+    the container destructor can be notably simplified if exception handling erases from 
+    the affected arrays all constructed elements.
+    </p>
+
+    <p>
+    The operations that modify values of the counts of container elements in internal nodes 
+    do not throw exceptions. Thus, where possible, the counts are updated in order to 
+    preserve proper invariants.
+    </p>
+
+    <p>
+    Any exception that has been caught and handled makes unsafe all subsequent operations, 
+    which assume that all data stored in nodes are valid and that all groups of children nodes 
+    are balanced. This restriction applies to nearly all operations that support interface 
+    member functions of standard containers and operators of iterators.
+    </p>
+
+    <p>
+    The destructor of a container based on an augmented B+ tree does not rely on advanced 
+    features of these data structures. The safety of the destructor is guaranteed by 
+    the structural invariants that are not violated by the thrown and handled exceptions. 
+    The destructor of an augmented B+ tree uses only the basic connectivity of nodes 
+    to release all resources that the tree acquired.
+    </p>
+
+    <p>
+    The classes <code>bp_tree_array</code> and <code>bp_tree_array_acc</code> provide 
+    slightly different exception safety guarantees. The operations on containers elements 
+    in arrays of these B+ trees are identical. The difference is caused by the operations on 
+    internal nodes. A B-tree of internal nodes of the class <code>bp_tree_array</code> represents 
+    a relatively simple and safe container of pointers. The main reason why the class 
+    <code>bp_tree_array_acc</code> is less safe is that its B-tree stores in nodes additional 
+    values of sums of container elements. The operations on such internal nodes may throw 
+    exceptions from the copy constructor and the assignment operator of the element type. 
+    The other exception safety problem might be caused by arithmetic operations with container elements. 
+    The current version of these augmented B+ trees assumes that element operators 
+    <code>{+, +=, -, -=}</code> do not throw exceptions.
+    </p>
+
+
   <hr>
 
   <p><a href="http://validator.w3.org/check?uri=referer"><img border="0" src=
@@ -675,9 +758,9 @@
 
   <p>Revised 
   <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
-  20 October, 2012<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
+  12 September, 2013<!--webbot bot="Timestamp" endspan i-checksum="38514" --></p>
 
-  <p><i>Copyright &copy; 2011-2012</i> 
+  <p><i>Copyright &copy; 2011-2013</i> 
   <a href="mailto:vadimstdk@gmail.com"><i>Vadim Stadnik</i><br>(vadimstdk@gmail.com)</a>
   </p>
 
